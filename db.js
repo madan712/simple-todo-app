@@ -29,7 +29,41 @@ export const fetchTask = (callback) => {
 		);
 		
 	});
+};
+
+export const deleteTask = (id) => {
+	console.log('deleting task '+id);
 	
+	db.transaction((tx) =>{
+		tx.executeSql('delete from task where id = ?;', [id]);
+	},
+	(err) => console.log(err),
+	() => console.log('task id '+id+' deleted successfully'),
+	);
+};
+
+export const fetchCategoryList = (callback) => {
+	console.log('fetchCategoryList...');
+	db.transaction((tx) =>{
+		tx.executeSql('select c.id as catid, c.name as catname from category c',
+		  [],
+		  (_, { rows: { _array } }) => callback(_array),
+		  () => console.log('error fetching')
+		);
+		
+	});
+};
+
+
+export const deleteCategory = (id) => {
+	console.log('deleting category '+id);
+	
+	db.transaction((tx) =>{
+		tx.executeSql('delete from category where id = ?;', [id]);
+	},
+	(err) => console.log(err),
+	() => console.log('category id '+id+' deleted successfully'),
+	);
 };
 
 

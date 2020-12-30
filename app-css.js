@@ -23,9 +23,18 @@ export const styles = StyleSheet.create({
 	color: '#000',
     fontSize: 20,
   },
+  subtitle: {
+	color: '#000',
+    fontSize: 10,
+  },
   icons: {
 	flexDirection: 'row',
 	flex: 1,
 	justifyContent: 'flex-end',
+  },
+  empty: {
+	  marginVertical: 50,
+	  alignSelf: 'center',
+	  fontSize: 20,
   }
 });
