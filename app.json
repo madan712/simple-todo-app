@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "smart-alarm",
-    "slug": "smart-alarm",
+    "name": "simple-todo-app",
+    "slug": "simple-todo-app",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

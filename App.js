@@ -1,84 +1,51 @@
-import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, Text, View, FlatList } from 'react-native';
 import { ActionButton } from 'react-native-material-ui';
 import {Header, Icon } from 'react-native-elements';
 
-const todoList = [
-  {
-    id: '1',
-    title: 'First Item',
-  },
-  {
-    id: '2',
-    title: 'Second Item',
-  },
-  {
-    id: '3',
-    title: 'Third Item',
-  },
-];
+import { initApp, fetchTask } from './db'
 
-const Item = ({ title }) => (
-  <View style={styles.item}>
-	<View style={styles.text}>
-		<Text style={styles.title}>{title}</Text>
-	</View>
-	<View style={styles.icons}>
-		<Icon name='edit' onPress={() => console.log('edit')} />
-	</View>
-	<View style={styles.icons}>
-		<Icon name='delete' onPress={() => console.log('delete')} />
-	</View>
-  </View>
-);
+import { styles } from "./app-css"
 
-const renderItem = ({ item }) => (
-    <Item title={item.title} />
-);
+import {Item} from './item'
 
-export default function App() {
-  return (
-    <View style={styles.container}>
-      <Header
-		  centerComponent={{ text: 'TODO', style: { color: '#fff' } }}
-		/>
-		<FlatList
-			data={todoList}
-			renderItem={renderItem}
-			keyExtractor={item => item.id}
-		  />
-		  <ActionButton onPress={() => { console.log("Add")}}/>
-    </View>
-  );
+
+class App extends Component {
+	
+	constructor(props) {
+        super(props);
+		this.state = {'todoList': []};
+    }
+	
+	async componentDidMount() {
+		console.log('componentDidMount');
+		initApp(() => {
+			fetchTask((taskList) => {
+				console.log(taskList);
+				this.setState({'todoList': taskList})
+			});
+		});
+		
+	}
+	
+  render() {
+
+    return (
+            <View style={styles.container}>
+			  <Header
+				  centerComponent={{ text: 'TODO List', style: { color: '#fff' } }}
+				/>
+				<FlatList
+					data={this.state.todoList}
+					renderItem={({ item }) => <Item title={item.name}/>}
+					keyExtractor={item => item.id.toString()}
+				  />
+				  <ActionButton onPress={() => { console.log("Add")}}/>
+			</View>
+    );
+  }
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  item: { 
-    backgroundColor: '#f9c2ff',
-    padding: 10,
-    marginVertical: 10,
-    marginHorizontal: 10,
-	flexDirection: 'row',
-	justifyContent: 'space-between',
-	borderColor: '#000',
-	borderWidth: 1,
-	borderRadius: 10
-  },
-  text: {
-	  flex: 3,
-  },
-  title: {
-	color: '#000',
-    fontSize: 20,
-  },
-  icons: {
-	flexDirection: 'row',
-	flex: 1,
-	justifyContent: 'flex-end',
-  }
-});
+export default App;
+
+
