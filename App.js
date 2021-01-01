@@ -1,23 +1,27 @@
-import { createAppContainer } from 'react-navigation'
-import { createStackNavigator } from 'react-navigation-stack'
+import React, { Component } from 'react';
+import { Provider } from 'react-redux';
 
-import TaskScreen from './task-screen';
-import CategoryScreen from './category-screen';
+import appStore from './src/app-store';
+import Router from './src/router';
+
+import { initApp } from './src/db'
+
+class App extends Component {
+	
+	async componentDidMount() {
+		console.log('Initlizing DB');
+		initApp(() => console.log('DB Initlized successfully'));
+	}
+        
+	render() {		
+		return ( 
+			<Provider store={appStore}>
+				<Router />
+			</Provider>
+		);
+	}
+}
 
 
-const MainNavigator = createStackNavigator(
-    {
-        TaskScreen: { screen: TaskScreen},
-        CategoryScreen: { screen: CategoryScreen },
-    },
-    {
-        initialRouteName: 'TaskScreen',
-        headerMode: 'none',
-    },
-)
-
-const App = createAppContainer(MainNavigator)
 
 export default App;
-
-

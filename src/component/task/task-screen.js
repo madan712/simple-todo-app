@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, FlatList } from 'react-native';
 import { ActionButton, Toolbar } from 'react-native-material-ui';
 
-import { initApp, fetchTask } from './db'
+import { initApp, fetchTask } from '../../db'
 
-import { styles } from "./app-css"
+import { styles } from "../../app-css"
 
 import {Task} from './task'
 
@@ -16,7 +16,7 @@ class TaskScreen extends Component {
     }
 	
 	async componentDidMount() {
-		console.log('componentDidMount');
+		console.log('TaskScreen componentDidMount');
 		initApp(() => {
 			fetchTask((taskList) => {
 				console.log(taskList);
