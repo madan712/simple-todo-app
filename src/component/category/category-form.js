@@ -43,7 +43,7 @@ class CategoryForm extends React.Component {
 	}
 	
 	render() {
-		const header = this.props.navigation.state.params.type === 'ADD' ? 'Create new category' : 'Edit Category';
+		const header = this.props.navigation.state.params.type === 'ADD' ? 'Create new category' : 'Edit category';
 		
 		return (
 			<View style={styles.formContainer}>
@@ -87,16 +87,10 @@ class CategoryForm extends React.Component {
 	}
 }
 
-function mapStateToProps( state ) {
-    return {
-        categoryReducer: state.categoryReducer
-    };
-}
-
 function mapDispatchToProps( dispatch ) {
     return {
         categoryAction: bindActionCreators( categoryAction, dispatch )
     };
 }
 
-export default connect( mapStateToProps, mapDispatchToProps )( CategoryForm );
+export default connect( null, mapDispatchToProps )( CategoryForm );

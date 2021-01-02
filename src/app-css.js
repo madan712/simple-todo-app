@@ -14,6 +14,7 @@ export const styles = StyleSheet.create({
 	borderColor: '#000',
 	borderWidth: 1,
 	borderRadius: 10,
+	backgroundColor: '#fff8dc',
   },
   text: {
 	  flex: 3,

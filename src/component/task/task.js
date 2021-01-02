@@ -9,18 +9,7 @@ import { styles } from "../../app-css"
 export const Task = ({ task }) => (
   <View style={styles.item}>
 	<View style={styles.text}>
-		<Text style={styles.title}>{task.name}</Text>
-		<Text style={styles.subtitle}>{task.catname}</Text>
-	</View>
-	<View style={styles.icons}>
-		<TouchableOpacity onPress={() => console.log('edit')}>
-			<Icon name='edit'/>
-		</TouchableOpacity>
-	</View>
-	<View style={styles.icons}>
-		<TouchableOpacity onPress={() => deleteTask(task.id)}>
-			<Icon name='delete'/>
-		</TouchableOpacity>
+		<Text style={styles.title}>{task.taskName}</Text>
 	</View>
   </View>
 );

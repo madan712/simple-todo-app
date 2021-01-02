@@ -4,10 +4,11 @@ const initialState = {
     taskList: []
 };
 
-export default function taskReducer(state = initialState, action) {
+export default function appReducer(state = initialState, action) {
     const newState = Object.assign({}, state);
     switch (action.type) {
         case constant.LOAD_TASK_LIST:
+			console.log('LOAD_TASK_LIST');
         	newState.taskList = action.taskList;
         	return newState;
         default:

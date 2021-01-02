@@ -2,28 +2,22 @@ import React, { Component } from 'react';
 import { StyleSheet, Text, View, FlatList } from 'react-native';
 import { ActionButton, Toolbar } from 'react-native-material-ui';
 
-import { initApp, fetchTask } from '../../db'
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+
+import _ from 'lodash';
+
+import * as taskAction from '../../action/task-action';
 
 import { styles } from "../../app-css"
 
-import {Task} from './task'
+import { Task } from './task'
 
 class TaskScreen extends Component {
 	
-	constructor(props) {
-        super(props);
-		this.state = {'todoList': []};
-    }
-	
-	async componentDidMount() {
-		console.log('TaskScreen componentDidMount');
-		initApp(() => {
-			fetchTask((taskList) => {
-				console.log(taskList);
-				this.setState({'todoList': taskList})
-			});
-		});
-		
+	getTaskList() {
+		console.log('----------------TaskScreen getTaskList');
+		return _.filter(this.props.appReducer.taskList, t => t.catId === this.props.navigation.state.params.cat.catId && t.taskId );
 	}
 	
   render() {
@@ -31,28 +25,40 @@ class TaskScreen extends Component {
     return (
 		<View style={styles.container}>
 			<Toolbar
-				centerElement="TODO List"
-				rightElement={{ menu: {icon: "more-vert", labels: ["Category", "Delete all"]} }}
+				style={{container: {backgroundColor: this.props.navigation.state.params.cat.color} }}
+				leftElement='arrow-back' onLeftElementPress={() => this.props.navigation.goBack()}
+				centerElement={this.props.navigation.state.params.cat.catName}
+				rightElement={{ menu: {icon: "more-vert", labels: ['Delete all']} }}
 				onRightElementPress={(option) => { 
 					if(option.index === 0) {
-						this.props.navigation.navigate('CategoryScreen');
-					} else if(option.index === 1) {
 						console.log('Delete all task');
+						this.props.taskAction.deleteAllTask(this.props.navigation.state.params.cat.catId);
 					}
 				}}
 			/>
 			<FlatList
-				data={this.state.todoList}
+				data={this.getTaskList()}
 				renderItem={({ item }) => <Task task={item}/>}
-				keyExtractor={item => item.id.toString()}
-				ListEmptyComponent={<Text style={styles.empty}>No task found1</Text>}
+				keyExtractor={item => item.taskId.toString()}
+				ListEmptyComponent={<Text style={styles.empty}>No task found</Text>}
 			/>
-			<ActionButton onPress={() => { console.log("Add task")}}/>
+			<ActionButton onPress={ () => this.props.navigation.navigate('TaskForm', {'type': 'ADD', 'cat': this.props.navigation.state.params.cat }) }/>
 		</View>
     );
   }
 }
 
-export default TaskScreen;
+function mapStateToProps( state ) {
+    return {
+        appReducer: state.appReducer
+    };
+}
 
+function mapDispatchToProps( dispatch ) {
+    return {
+		taskAction: bindActionCreators( taskAction, dispatch )
+    };
+}
+
+export default connect( mapStateToProps, mapDispatchToProps )( TaskScreen );
 

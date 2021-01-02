@@ -1,4 +1,1 @@
-export const LOAD_CATEGORY_LIST = 'LOAD_CATEGORY_LIST';
-export const ADD_NEW_CATEGORY = 'ADD_NEW_CATEGORY';
-
 export const LOAD_TASK_LIST = 'LOAD_TASK_LIST';

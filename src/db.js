@@ -7,13 +7,13 @@ export const initApp = (callback) => {
 	console.log('initApp...')
 	db.transaction((tx) => {
 		tx.executeSql('create table if not exists category (id integer primary key autoincrement not null, name text, color text);');
-		tx.executeSql('create table if not exists task (id integer primary key autoincrement not null, name text, catid integer, FOREIGN KEY(catid) REFERENCES category(id));');
-		tx.executeSql('insert or ignore into category (name, color) values (?, ?)', ['Office', '#808080']);
+		tx.executeSql('create table if not exists task (id integer primary key autoincrement not null, name text, catId integer, FOREIGN KEY(catId) REFERENCES category(id));');
+		/*tx.executeSql('insert or ignore into category (name, color) values (?, ?)', ['Office', '#808080']);
 		tx.executeSql('insert or ignore into category (name, color) values (?, ?)', ['Home', '#add8e6']);
-		tx.executeSql('insert or ignore into task (name, catid) values (?, ?)', ['Presentation', 1]);
-		tx.executeSql('insert or ignore into task (name, catid) values (?, ?)', ['Report', 1]);
-		tx.executeSql('insert or ignore into task (name, catid) values (?, ?)', ['Shopping', 2]);
-		tx.executeSql('insert or ignore into task (name, catid) values (?, ?)', ['Cleaning', 2]);
+		tx.executeSql('insert or ignore into task (name, catId) values (?, ?)', ['Presentation', 1]);
+		tx.executeSql('insert or ignore into task (name, catId) values (?, ?)', ['Report', 1]);
+		tx.executeSql('insert or ignore into task (name, catId) values (?, ?)', ['Shopping', 2]);
+		tx.executeSql('insert or ignore into task (name, catId) values (?, ?)', ['Cleaning', 2]);*/
 	},
 	(err) => console.log(err),
 	callback(),

@@ -5,19 +5,29 @@ import { ActionButton, Toolbar } from 'react-native-material-ui';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
+import _ from 'lodash';
 
-import * as categoryAction from '../../action/category-action';
+import * as taskAction from '../../action/task-action';
 
 import { styles } from "../../app-css"
 
-import {Category} from './category'
-
+import Category from './category'
 
 class CategoryScreen extends Component {
 	
 	async componentDidMount() {
 		console.log('CategoryScreen componentDidMount');
-		this.props.categoryAction.loadCategoryList();
+		this.props.taskAction.loadTaskList();
+	}
+	
+	getCategoriesFromTaskList() {
+		const categories = [];
+		_.forEach(_.groupBy( this.props.appReducer.taskList, 'catId' ), (catArray, catId) => {
+			const cat = catArray[0];
+			cat['count'] = _.filter(catArray, c => c.taskId).length;
+			categories.push(cat);
+		});
+		return categories;
 	}
 	
   render() {
@@ -28,13 +38,13 @@ class CategoryScreen extends Component {
 				centerElement='Category List'
 			/>
 			<FlatList
-				data={this.props.categoryReducer.categoryList}
-				renderItem={({ item }) => <Category cat={item}/>}
-				keyExtractor={item => item.catid.toString()}
+				data={this.getCategoriesFromTaskList()}
+				renderItem={({ item }) => <Category cat={item} navigation={this.props.navigation} />}
+				keyExtractor={item => item.catId.toString()}
 				ListEmptyComponent={<Text style={styles.empty}>No category found</Text>}
 			/>
 			
-			<ActionButton onPress={() => this.props.navigation.navigate('CategoryForm', {type: 'ADD'})}/>
+			<ActionButton onPress={() => this.props.navigation.navigate('CategoryForm', {'type': 'ADD'})}/>
 		</View>
     );
   }
@@ -42,13 +52,13 @@ class CategoryScreen extends Component {
 
 function mapStateToProps( state ) {
     return {
-        categoryReducer: state.categoryReducer
+        appReducer: state.appReducer
     };
 }
 
 function mapDispatchToProps( dispatch ) {
     return {
-        categoryAction: bindActionCreators( categoryAction, dispatch )
+		taskAction: bindActionCreators( taskAction, dispatch )
     };
 }
 

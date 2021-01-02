@@ -1,12 +1,9 @@
 import {combineReducers} from 'redux';
 
-import categoryReducer from './category-reducer';
-import taskReducer from './task-reducer';
-
+import appReducer from './app-reducer';
 
 const rootReducer = combineReducers({
-	categoryReducer,
-	taskReducer
+	appReducer
 });
 
 export default rootReducer;
