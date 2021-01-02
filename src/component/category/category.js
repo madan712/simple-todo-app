@@ -10,9 +10,11 @@ class Category extends Component {
 	
   render() {
     return (
-		<View style={[styles.item, {backgroundColor: this.props.cat.color}]} onStartShouldSetResponder={() => this.props.navigation.navigate('TaskScreen', { 'cat': this.props.cat })}>
+	<TouchableOpacity onLongPress={this.props.drag} onPress={() => this.props.navigation.navigate('TaskScreen', { 'cat': this.props.cat })}>
+		<View style={[styles.item, {backgroundColor: this.props.cat.color, borderColor: this.props.isActive ? '#ff0000' : '#000',}]}>
 			<Text style={styles.title}>{this.props.cat.catName+" ("+this.props.cat.count+")"}</Text>
-	  </View>
+	  </View>			
+	</TouchableOpacity>
     );
   }
 }
