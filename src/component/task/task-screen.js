@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Alert } from 'react-native';
 import { ActionButton, Toolbar } from 'react-native-material-ui';
 
 import { bindActionCreators } from 'redux';
@@ -31,8 +31,15 @@ class TaskScreen extends Component {
 				rightElement={{ menu: {icon: "more-vert", labels: ['Delete all']} }}
 				onRightElementPress={(option) => { 
 					if(option.index === 0) {
-						console.log('Delete all task');
-						this.props.taskAction.deleteAllTask(this.props.navigation.state.params.cat.catId);
+						if(this.getTaskList().length === 0) {
+							Alert.alert('Error','No task found',[],{ cancelable: true});
+						} else {
+							console.log('Delete all task');
+							Alert.alert('Confirm','Do you want to delete all task?',[
+								{ text: "YES", onPress: () => this.props.taskAction.deleteAllTask(this.props.navigation.state.params.cat.catId)},
+								{ text: "NO", onPress: () => console.log("No Pressed") }
+							],{ cancelable: true});
+						}
 					}
 				}}
 			/>

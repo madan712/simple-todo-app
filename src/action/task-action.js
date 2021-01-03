@@ -11,6 +11,13 @@ function taskLoadedSuccessfully(taskList) {
 	return { type: constant.LOAD_TASK_LIST, taskList };
 }
 
+export function updateTaskList(taskList) {
+	console.log('updateTaskList...');
+	return (dispatch) => {
+		dispatch(taskLoadedSuccessfully(taskList));	
+	};
+}
+
 export function loadTaskList() {
 	console.log('loadTaskList...');
 	return (dispatch) => {

@@ -23,13 +23,13 @@ class TaskForm extends React.Component {
 	
 	createTask() {
 		
-		if(this.state.name) {
+		if(this.state.name && this.state.name.trim()) {
 			console.log('----------------------');
 			console.log(this.state.name);
-			this.props.taskAction.insetTask(this.state.name, this.props.navigation.state.params.cat.catId);
+			this.props.taskAction.insetTask(this.state.name.trim(), this.props.navigation.state.params.cat.catId);
 			this.props.navigation.navigate('TaskScreen', {'cat': this.props.navigation.state.params.cat });
 		} else {
-			Alert.alert('Please enter task name');
+			Alert.alert('Error','Please enter task name',[],{ cancelable: true});
 		}
 	}
 	
@@ -50,6 +50,7 @@ class TaskForm extends React.Component {
 						style={styles.inputText}
 						placeholder="Task name"
 						maxLength={20}
+						autoFocus
 						onChangeText={(name) => this.setState({'name':name})}
 					/>
 				</View>

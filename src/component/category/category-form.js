@@ -1,5 +1,5 @@
 import React from 'react';
-import { Text, View, TouchableOpacity, Dimensions, TextInput, Button,Alert } from 'react-native';
+import { Text, View, TouchableOpacity, Dimensions, TextInput, Button, Alert, Picker } from 'react-native';
 import { Toolbar, Icon } from 'react-native-material-ui';
 import { SliderHuePicker } from 'react-native-slider-color-picker';
 import tinycolor from 'tinycolor2';
@@ -30,15 +30,14 @@ class CategoryForm extends React.Component {
 	};
 	
 	createCategory() {
-		
-		if(this.state.name) {
+		if(this.state.name && this.state.name.trim()) {
 			console.log('----------------------');
 			console.log(this.state.bgColor);
 			console.log(this.state.name);
-			this.props.categoryAction.insetCategory(this.state.name, this.state.bgColor);
+			this.props.categoryAction.insetCategory(this.state.name.trim(), this.state.bgColor);
 			this.props.navigation.navigate('CategoryScreen');
 		} else {
-			Alert.alert('Please enter category name');
+			Alert.alert('Error','Please enter category name',[],{ cancelable: true});
 		}
 	}
 	
@@ -55,6 +54,7 @@ class CategoryForm extends React.Component {
 						style={styles.inputText}
 						placeholder="Category name"
 						maxLength={20}
+						autoFocus
 						onChangeText={(name) => this.setState({'name':name})}
 					/>
 				</View>

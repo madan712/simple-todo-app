@@ -11,7 +11,7 @@ class Category extends Component {
   render() {
     return (
 	<TouchableOpacity onLongPress={this.props.drag} onPress={() => this.props.navigation.navigate('TaskScreen', { 'cat': this.props.cat })}>
-		<View style={[styles.item, {backgroundColor: this.props.cat.color, borderColor: this.props.isActive ? '#ff0000' : '#000',}]}>
+		<View style={[styles.item, {backgroundColor: this.props.cat.color, borderWidth: this.props.isActive ? 2 : 0,}]}>
 			<Text style={styles.title}>{this.props.cat.catName+" ("+this.props.cat.count+")"}</Text>
 	  </View>			
 	</TouchableOpacity>

@@ -14,7 +14,7 @@ export function insetCategory(catName, bgColor) {
 			//tx.executeSql('delete from category', []);
 			//tx.executeSql('delete from task', []);
 			tx.executeSql('insert or ignore into category (name, color) values (?, ?);', [catName, bgColor]);
-			tx.executeSql('UPDATE category SET seq = id WHERE _ROWID_ = last_insert_rowid();', []);
+			//tx.executeSql('UPDATE category SET seq = id WHERE _ROWID_ = last_insert_rowid();', []);
 			},
 			(err) => console.log(err),
 			() => dispatch(loadTaskList()),
@@ -23,20 +23,24 @@ export function insetCategory(catName, bgColor) {
 }
 
 export function updateSequence(sequence) {
+	
 	let query = 'update category set seq = case id';
-	_.forEach(sequence, seq => {
-		query += ' when '+seq.catId+' then '+seq.index;
-	});
+	for (let [catId, seq] of sequence) {
+		query += ' when '+catId+' then '+seq;
+	}
 	query += ' end';
+	
 	console.log(query);
 	
 	return (dispatch) => {
+		
 		db.transaction((tx) =>{
 			tx.executeSql(query, []);
 			},
 			(err) => console.log(err),
 			() => dispatch(loadTaskList()),
 		);
+		
 	};
 }
 

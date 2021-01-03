@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Text, View, FlatList, TouchableOpacity } from 'react-native';
+import { Text, View, FlatList, TouchableOpacity, Alert } from 'react-native';
 import { ActionButton, Toolbar } from 'react-native-material-ui';
 
 import { bindActionCreators } from 'redux';
@@ -36,13 +36,16 @@ class CategoryScreen extends Component {
 	}
 	
 	updateSequence(categories) {
-		//console.log('-----------------updateSequence');
+		console.log('-----------------updateSequence');
 		//console.log(categories);
-		const sequence = [];
+		let sequence = new Map();
 		_.forEach(categories, (cat, index) => {	
-			sequence.push({'catId':cat['catId'], 'index':index + 1});
+			sequence.set(cat['catId'], index + 1);
 		});
 		//console.log(sequence);
+		//Update cache to avoid lag
+		this.props.taskAction.updateTaskList(this.props.appReducer.taskList.map(t => ({ ...t, cSeq: sequence.get(t.catId)})));
+		//Update DB
 		this.props.categoryAction.updateSequence(sequence);
 	}
 	
@@ -55,8 +58,15 @@ class CategoryScreen extends Component {
 				rightElement={{ menu: {icon: "more-vert", labels: ['Delete all']} }}
 				onRightElementPress={(option) => { 
 					if(option.index === 0) {
-						console.log('Delete all category');
-						this.props.categoryAction.deleteAllCategory();
+						if(this.getCategoriesFromTaskList().length === 0) {
+							Alert.alert('Error','No category found',[],{ cancelable: true});
+						} else {
+							console.log('Delete all category');
+							Alert.alert('Confirm','Do you want to delete all category?',[
+								{ text: "YES", onPress: () => this.props.categoryAction.deleteAllCategory()},
+								{ text: "NO", onPress: () => console.log("No Pressed") }
+							],{ cancelable: true});
+						}
 					}
 				}}
 			/>
@@ -66,6 +76,7 @@ class CategoryScreen extends Component {
 				renderItem={({ item, index, drag, isActive }) => <Category drag={drag} isActive={isActive} cat={item} navigation={this.props.navigation} />}
 				keyExtractor={item => item.catId.toString()}
 				onDragEnd={({ data }) => this.updateSequence(data)}
+				ListEmptyComponent={<Text style={styles.empty}>No category found</Text>}
 			/>
 			
 			<ActionButton onPress={() => this.props.navigation.navigate('CategoryForm', {'type': 'ADD'})}/>
