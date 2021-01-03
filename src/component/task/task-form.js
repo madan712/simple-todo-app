@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 
 import * as taskAction from '../../action/task-action';
 
-import { styles } from "../../app-css";
+import { styles } from '../../app-css';
 
 const { width } = Dimensions.get('window');
 
@@ -22,10 +22,7 @@ class TaskForm extends React.Component {
     }
 	
 	createTask() {
-		
 		if(this.state.name && this.state.name.trim()) {
-			console.log('----------------------');
-			console.log(this.state.name);
 			this.props.taskAction.insetTask(this.state.name.trim(), this.props.navigation.state.params.cat.catId);
 			this.props.navigation.navigate('TaskScreen', {'cat': this.props.navigation.state.params.cat });
 		} else {

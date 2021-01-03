@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 
 import * as categoryAction from '../../action/category-action';
 
-import { styles } from "../../app-css";
+import { styles } from '../../app-css';
 
 const { width } = Dimensions.get('window');
 
@@ -24,16 +24,12 @@ class CategoryForm extends React.Component {
 	
 	changeColor(colorHsvOrRgb, resType) {
 		if (resType === 'end') {
-			console.log(tinycolor(colorHsvOrRgb).toHexString());
             this.setState({ 'bgColor': tinycolor(colorHsvOrRgb).toHexString() });
         }
 	};
 	
 	createCategory() {
 		if(this.state.name && this.state.name.trim()) {
-			console.log('----------------------');
-			console.log(this.state.bgColor);
-			console.log(this.state.name);
 			this.props.categoryAction.insetCategory(this.state.name.trim(), this.state.bgColor);
 			this.props.navigation.navigate('CategoryScreen');
 		} else {

@@ -4,12 +4,11 @@ import { Provider } from 'react-redux';
 import appStore from './src/app-store';
 import Router from './src/router';
 
-import { initApp } from './src/db'
+import { initApp } from './src/db';
 
 class App extends Component {
 	
-	async componentDidMount() {
-		console.log('Initlizing DB');
+	componentDidMount() {
 		initApp(() => console.log('DB Initlized successfully'));
 	}
         

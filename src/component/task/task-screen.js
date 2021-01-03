@@ -11,25 +11,21 @@ import DraggableFlatList from 'react-native-draggable-flatlist';
 
 import * as taskAction from '../../action/task-action';
 
-import { styles } from "../../app-css"
+import { styles } from '../../app-css';
 
-import Task from './task'
+import Task from './task';
 
 class TaskScreen extends Component {
 	
 	getTaskList() {
-		console.log('----------------TaskScreen getTaskList');
 		return _.orderBy(_.filter(this.props.appReducer.taskList, t => t.catId === this.props.navigation.state.params.cat.catId && t.taskId ), 'tSeq');
 	}
 	
 	updateSequence(taskList) {
-		console.log('-----------------updateSequence taskList');
-		console.log(taskList);
 		let sequence = new Map();
 		_.forEach(taskList, (task, index) => {	
 			sequence.set(task['taskId'], index + 1);
 		});
-		console.log(sequence);
 		//Update cache to avoid lag
 		this.props.taskAction.updateTaskList(this.props.appReducer.taskList.map(t => ({ ...t, tSeq: sequence.get(t.taskId)})));
 		//Update DB
@@ -37,7 +33,6 @@ class TaskScreen extends Component {
 	}
 	
   render() {
-	console.log('Rendering task screen');
     return (
 		<View style={styles.container}>
 			<Toolbar
@@ -49,7 +44,6 @@ class TaskScreen extends Component {
 						if(this.getTaskList().length === 0) {
 							Alert.alert('Error','No task found',[],{ cancelable: true});
 						} else {
-							console.log('Delete all task');
 							Alert.alert('Confirm','Do you want to delete all task?',[
 								{ text: "YES", onPress: () => this.props.taskAction.deleteAllTask(this.props.navigation.state.params.cat.catId)},
 								{ text: "NO", onPress: () => console.log("No Pressed") }
@@ -58,7 +52,6 @@ class TaskScreen extends Component {
 					}
 				}}
 			/>
-			
 			
 			<DraggableFlatList
 				data={this.getTaskList()}

@@ -2,9 +2,12 @@ import React, {Component} from 'react';
 import { Text, View, TouchableOpacity, Switch } from 'react-native';
 import { Icon } from 'react-native-material-ui';
 
-import { deleteTask } from '../../db'
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
 
-import { styles } from "../../app-css";
+import * as taskAction from '../../action/task-action';
+
+import { styles } from '../../app-css';
 	
 class Task extends Component {
 	
@@ -14,7 +17,9 @@ class Task extends Component {
 	}
 
 	toggleActive() {
-		console.log('Toggle:'+this.props.task.taskId);
+		//Update cache to avoid lag
+		this.props.taskAction.updateTaskList(this.props.appReducer.taskList.map(t => (t.taskId === this.props.task.taskId ? {...t, isActive: t.isActive === 1 ? 0 : 1} : t)));
+		//Update DB
 		this.props.toggleActive(this.props.task.taskId)
 	}
 	
@@ -36,4 +41,16 @@ class Task extends Component {
 	}
 }
 
-export default Task;
+function mapStateToProps( state ) {
+    return {
+        appReducer: state.appReducer
+    };
+}
+
+function mapDispatchToProps( dispatch ) {
+    return {
+		taskAction: bindActionCreators( taskAction, dispatch )
+    };
+}
+
+export default connect( mapStateToProps, mapDispatchToProps )( Task );

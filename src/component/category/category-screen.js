@@ -12,37 +12,32 @@ import _ from 'lodash';
 import * as taskAction from '../../action/task-action';
 import * as categoryAction from '../../action/category-action';
 
-import { styles } from "../../app-css"
+import { styles } from '../../app-css';
 
-import Category from './category'
+import Category from './category';
 
 class CategoryScreen extends Component {
 	
-	async componentDidMount() {
-		console.log('CategoryScreen componentDidMount');
+	componentDidMount() {
 		this.props.taskAction.loadTaskList();
 	}
 	
 	getCategoriesFromTaskList() {
 		const categories = [];
-		_.forEach(_.groupBy( this.props.appReducer.taskList, 'catId' ), (catArray, catId) => {
+		_.forEach(_.groupBy( this.props.appReducer.taskList, 'catId' ), (catArray, catId) => {		
 			const cat = catArray[0];
-			cat['count'] = _.filter(catArray, c => c.taskId).length;
+			cat['totalCount'] = _.filter(catArray, c => c.taskId).length;
+			cat['remainingCount'] = _.filter(catArray, c => c.isActive === 0).length;
 			categories.push(cat);
 		});
-		//console.log('-----------------getCategoriesFromTaskList');
-		//console.log(categories);
 		return _.orderBy(categories,'cSeq');
 	}
 	
 	updateSequence(categories) {
-		console.log('-----------------updateSequence categories');
-		//console.log(categories);
 		let sequence = new Map();
 		_.forEach(categories, (cat, index) => {	
 			sequence.set(cat['catId'], index + 1);
 		});
-		//console.log(sequence);
 		//Update cache to avoid lag
 		this.props.taskAction.updateTaskList(this.props.appReducer.taskList.map(t => ({ ...t, cSeq: sequence.get(t.catId)})));
 		//Update DB
@@ -50,7 +45,6 @@ class CategoryScreen extends Component {
 	}
 	
   render() {
-	console.log('Rendering category screen');
     return (
 		<View style={styles.container}>
 			<Toolbar
@@ -61,7 +55,6 @@ class CategoryScreen extends Component {
 						if(this.getCategoriesFromTaskList().length === 0) {
 							Alert.alert('Error','No category found',[],{ cancelable: true});
 						} else {
-							console.log('Delete all category');
 							Alert.alert('Confirm','Do you want to delete all category?',[
 								{ text: "YES", onPress: () => this.props.categoryAction.deleteAllCategory()},
 								{ text: "NO", onPress: () => console.log("No Pressed") }
