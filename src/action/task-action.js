@@ -7,7 +7,7 @@ const db = openDatabase('todo.db');
 
 function taskLoadedSuccessfully(taskList) {
 	console.log('---------------------------taskLoadedSuccessfully');
-	//console.log(taskList);
+	console.log(taskList);
 	return { type: constant.LOAD_TASK_LIST, taskList };
 }
 
@@ -55,5 +55,35 @@ export function deleteAllTask(catId) {
 			() => dispatch(loadTaskList()),
 		);
 	};
+}
+
+export function updateSequence(sequence) {
+	let query = 'update task set seq = case id';
+	for (let [taskId, seq] of sequence) {
+		query += ' when '+taskId+' then '+seq;
+	}
+	query += ' end';
 	
+	console.log(query);
+	
+	return (dispatch) => {
+		
+		db.transaction((tx) =>{
+			tx.executeSql(query, []);
+			},
+			(err) => console.log(err),
+			() => dispatch(loadTaskList()),
+		);
+	};
+}
+
+export function toggleActive(taskId) {
+	return (dispatch) => {
+		db.transaction((tx) =>{
+			tx.executeSql('update task set isActive = case isActive when 1 then 0 else 1 end where id = ?', [taskId]);
+			},
+			(err) => console.log(err),
+			() => dispatch(loadTaskList()),
+		);
+	};
 }

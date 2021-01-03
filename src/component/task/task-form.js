@@ -39,7 +39,6 @@ class TaskForm extends React.Component {
 		return (
 			<View style={styles.formContainer}>
 				<Toolbar
-					style={{container: {backgroundColor: this.props.navigation.state.params.cat.color} }}
 					leftElement='arrow-back'
 					onLeftElementPress={() => this.props.navigation.goBack()}
 					centerElement={header} />

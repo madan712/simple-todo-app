@@ -36,7 +36,7 @@ class CategoryScreen extends Component {
 	}
 	
 	updateSequence(categories) {
-		console.log('-----------------updateSequence');
+		console.log('-----------------updateSequence categories');
 		//console.log(categories);
 		let sequence = new Map();
 		_.forEach(categories, (cat, index) => {	
@@ -54,7 +54,7 @@ class CategoryScreen extends Component {
     return (
 		<View style={styles.container}>
 			<Toolbar
-				centerElement='Category List'
+				centerElement='Todo - Category list'
 				rightElement={{ menu: {icon: "more-vert", labels: ['Delete all']} }}
 				onRightElementPress={(option) => { 
 					if(option.index === 0) {

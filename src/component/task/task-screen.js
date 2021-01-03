@@ -7,17 +7,33 @@ import { connect } from 'react-redux';
 
 import _ from 'lodash';
 
+import DraggableFlatList from 'react-native-draggable-flatlist';
+
 import * as taskAction from '../../action/task-action';
 
 import { styles } from "../../app-css"
 
-import { Task } from './task'
+import Task from './task'
 
 class TaskScreen extends Component {
 	
 	getTaskList() {
 		console.log('----------------TaskScreen getTaskList');
-		return _.filter(this.props.appReducer.taskList, t => t.catId === this.props.navigation.state.params.cat.catId && t.taskId );
+		return _.orderBy(_.filter(this.props.appReducer.taskList, t => t.catId === this.props.navigation.state.params.cat.catId && t.taskId ), 'tSeq');
+	}
+	
+	updateSequence(taskList) {
+		console.log('-----------------updateSequence taskList');
+		console.log(taskList);
+		let sequence = new Map();
+		_.forEach(taskList, (task, index) => {	
+			sequence.set(task['taskId'], index + 1);
+		});
+		console.log(sequence);
+		//Update cache to avoid lag
+		this.props.taskAction.updateTaskList(this.props.appReducer.taskList.map(t => ({ ...t, tSeq: sequence.get(t.taskId)})));
+		//Update DB
+		this.props.taskAction.updateSequence(sequence);
 	}
 	
   render() {
@@ -25,7 +41,6 @@ class TaskScreen extends Component {
     return (
 		<View style={styles.container}>
 			<Toolbar
-				style={{container: {backgroundColor: this.props.navigation.state.params.cat.color} }}
 				leftElement='arrow-back' onLeftElementPress={() => this.props.navigation.goBack()}
 				centerElement={this.props.navigation.state.params.cat.catName}
 				rightElement={{ menu: {icon: "more-vert", labels: ['Delete all']} }}
@@ -43,12 +58,16 @@ class TaskScreen extends Component {
 					}
 				}}
 			/>
-			<FlatList
+			
+			
+			<DraggableFlatList
 				data={this.getTaskList()}
-				renderItem={({ item }) => <Task task={item}/>}
+				renderItem={({ item, index, drag, isActive }) => <Task drag={drag} isActive={isActive} task={item} toggleActive={this.props.taskAction.toggleActive} />}
 				keyExtractor={item => item.taskId.toString()}
+				onDragEnd={({ data }) => this.updateSequence(data)}
 				ListEmptyComponent={<Text style={styles.empty}>No task found</Text>}
 			/>
+			
 			<ActionButton onPress={ () => this.props.navigation.navigate('TaskForm', {'type': 'ADD', 'cat': this.props.navigation.state.params.cat }) }/>
 		</View>
     );
