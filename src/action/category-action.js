@@ -9,7 +9,7 @@ const db = openDatabase('todo.db');
 export function insetCategory(catName, bgColor) {	
 	return (dispatch) => {
 		db.transaction((tx) =>{
-			tx.executeSql('insert or ignore into category (name, color) values (?, ?);', [catName, bgColor]);
+			tx.executeSql('insert or ignore into category (name, color) values (?, ?)', [catName, bgColor]);
 			},
 			(err) => console.log(err),
 			() => dispatch(loadTaskList()),
@@ -20,7 +20,7 @@ export function insetCategory(catName, bgColor) {
 export function updateCategory(catId, catName, bgColor) {	
 	return (dispatch) => {
 		db.transaction((tx) =>{
-			tx.executeSql('update category set name = ?, color = ? where id = ?;', [catName, bgColor, catId]);
+			tx.executeSql('update category set name = ?, color = ? where id = ?', [catName, bgColor, catId]);
 			},
 			(err) => console.log(err),
 			() => dispatch(loadTaskList()),

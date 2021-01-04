@@ -39,10 +39,32 @@ export function insetTask(taskName, catId) {
 	};
 }
 
+export function updateTask(taskId, taskName) {
+	return (dispatch) => {
+		db.transaction((tx) =>{
+			tx.executeSql('update task set name = ? where id = ?', [taskName, taskId]);
+			},
+			(err) => console.log(err),
+			() => dispatch(loadTaskList()),
+		);
+	};
+}
+
 export function deleteAllTask(catId) {
 	return (dispatch) => {
 		db.transaction((tx) =>{
 				tx.executeSql('delete from task where catId = ?', [catId]);
+			},
+			(err) => console.log(err),
+			() => dispatch(loadTaskList()),
+		);
+	};
+}
+
+export function deleteTask(taskId) {
+	return (dispatch) => {
+		db.transaction((tx) =>{
+				tx.executeSql('delete from task where id = ?', [taskId]);
 			},
 			(err) => console.log(err),
 			() => dispatch(loadTaskList()),

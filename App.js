@@ -9,7 +9,7 @@ import { initApp } from './src/db';
 class App extends Component {
 	
 	componentDidMount() {
-		initApp(() => console.log('DB Initlized successfully'));
+		initApp(() => void 0);
 	}
         
 	render() {		

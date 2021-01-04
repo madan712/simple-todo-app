@@ -46,7 +46,7 @@ class TaskScreen extends Component {
 						} else {
 							Alert.alert('Confirm','Do you want to delete all task?',[
 								{ text: "YES", onPress: () => this.props.taskAction.deleteAllTask(this.props.navigation.state.params.cat.catId)},
-								{ text: "NO", onPress: () => console.log("No Pressed") }
+								{ text: "NO", onPress: () => () => void 0 }
 							],{ cancelable: true});
 						}
 					}
@@ -54,8 +54,9 @@ class TaskScreen extends Component {
 			/>
 			
 			<DraggableFlatList
+				activationDistance={15}
 				data={this.getTaskList()}
-				renderItem={({ item, index, drag, isActive }) => <Task drag={drag} isActive={isActive} task={item} toggleActive={this.props.taskAction.toggleActive} />}
+				renderItem={({ item, index, drag, isActive }) => <Task drag={drag} isActive={isActive} task={item} toggleActive={this.props.taskAction.toggleActive} navigation={this.props.navigation} cat={this.props.navigation.state.params.cat} />}
 				keyExtractor={item => item.taskId.toString()}
 				onDragEnd={({ data }) => this.updateSequence(data)}
 				ListEmptyComponent={<Text style={styles.empty}>No task found</Text>}

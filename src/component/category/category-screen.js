@@ -57,7 +57,7 @@ class CategoryScreen extends Component {
 						} else {
 							Alert.alert('Confirm','Do you want to delete all category?',[
 								{ text: "YES", onPress: () => this.props.categoryAction.deleteAllCategory()},
-								{ text: "NO", onPress: () => console.log("No Pressed") }
+								{ text: "NO", onPress: () => () => void 0 }
 							],{ cancelable: true});
 						}
 					}

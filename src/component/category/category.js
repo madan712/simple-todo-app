@@ -15,7 +15,7 @@ class Category extends Component {
 	deleteCategory(catId) {
 		Alert.alert('Confirm','Do you want to delete this category?',[
 			{ text: "YES", onPress: () => this.props.categoryAction.deleteCategory(catId)},
-			{ text: "NO", onPress: () => console.log("No Pressed") }
+			{ text: "NO", onPress: () => () => void 0 }
 		],{ cancelable: true});
 	}
 	
@@ -48,12 +48,11 @@ class Category extends Component {
 	};
 	
 	render() {
-		let itemRef = null;
 		return (
 			<SwipeableItem
 				key={this.props.cat.catId}
 				item={this.props.cat, this.props.drag}
-				ref={ref => itemRef = ref}
+				ref={ref => void 0}
 				overSwipe={50}
 				renderUnderlayLeft={this.renderUnderlayLeft}
 				snapPointsLeft={[50]}
