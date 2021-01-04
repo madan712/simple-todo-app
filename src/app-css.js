@@ -12,7 +12,6 @@ export const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'space-between',
 		borderRadius: 10,
-		backgroundColor: '#fff8dc',
 	},
 	text: {
 		flex: 3,
@@ -71,5 +70,13 @@ export const styles = StyleSheet.create({
 		},
 		colorView:{
 		height: 50,
-	}
+	},
+	itemBg: { 
+		padding: 10,
+		marginVertical: 5,
+		marginHorizontal: 10,
+		flexDirection: 'row',
+		borderRadius: 10,
+		backgroundColor:"#d3d3d3"
+	},
 });

@@ -65,6 +65,7 @@ class CategoryScreen extends Component {
 			/>
 			
 			<DraggableFlatList
+				activationDistance={15}
 				data={this.getCategoriesFromTaskList()}
 				renderItem={({ item, index, drag, isActive }) => <Category drag={drag} isActive={isActive} cat={item} navigation={this.props.navigation} />}
 				keyExtractor={item => item.catId.toString()}

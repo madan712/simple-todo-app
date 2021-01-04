@@ -45,3 +45,14 @@ export function deleteAllCategory() {
 		);
 	};
 }
+
+export function deleteCategory(catId) {
+	return (dispatch) => {
+		db.transaction((tx) =>{
+				tx.executeSql('delete from category where id = ?', [catId]);
+			},
+			(err) => console.log(err),
+			() => dispatch(loadTaskList()),
+		);
+	};
+}
