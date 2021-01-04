@@ -20,7 +20,16 @@ class CategoryForm extends React.Component {
 		this.state = {'bgColor': '#FF0000','name':''};
 		this.changeColor = this.changeColor.bind( this );
 		this.createCategory = this.createCategory.bind( this );
+		
+		this.isAdd = this.props.navigation.state.params.type === 'ADD';
     }
+	
+	componentDidMount() {
+		if(!this.isAdd) {
+			this.setState({ 'bgColor': this.props.navigation.state.params.cat.color });
+			this.setState({ 'name': this.props.navigation.state.params.cat.catName });
+		}
+	}
 	
 	changeColor(colorHsvOrRgb, resType) {
 		if (resType === 'end') {
@@ -30,7 +39,14 @@ class CategoryForm extends React.Component {
 	
 	createCategory() {
 		if(this.state.name && this.state.name.trim()) {
-			this.props.categoryAction.insetCategory(this.state.name.trim(), this.state.bgColor);
+			
+			if(this.isAdd) {
+				this.props.categoryAction.insetCategory(this.state.name.trim(), this.state.bgColor);
+			} else {
+				this.props.categoryAction.updateCategory(this.props.navigation.state.params.cat.catId, this.state.name.trim(), this.state.bgColor);
+			}
+			
+			
 			this.props.navigation.navigate('CategoryScreen');
 		} else {
 			Alert.alert('Error','Please enter category name',[],{ cancelable: true});
@@ -38,7 +54,7 @@ class CategoryForm extends React.Component {
 	}
 	
 	render() {
-		const header = this.props.navigation.state.params.type === 'ADD' ? 'Create new category' : 'Edit category';
+		const header = this.isAdd ? 'Create new category' : 'Edit category';
 		
 		return (
 			<View style={styles.formContainer}>
@@ -50,6 +66,7 @@ class CategoryForm extends React.Component {
 						style={styles.inputText}
 						placeholder="Category name"
 						maxLength={20}
+						value={this.state.name}
 						autoFocus
 						onChangeText={(name) => this.setState({'name':name})}
 					/>
@@ -74,7 +91,7 @@ class CategoryForm extends React.Component {
 				</View>
 				<View style={styles.inputView} style={{alignItems:"center"}}>
 					<Button
-						title="Create"
+						title={this.isAdd ? 'Create' : 'Edit'}
 						onPress={this.createCategory}
 					  />
 				</View>

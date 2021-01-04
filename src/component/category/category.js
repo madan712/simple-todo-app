@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { Text, View, TouchableOpacity } from 'react-native';
+import { Text, View, TouchableOpacity, Alert } from 'react-native';
 import { Icon } from 'react-native-material-ui';
 
 import { bindActionCreators } from 'redux';
@@ -12,10 +12,15 @@ import * as categoryAction from '../../action/category-action';
 
 class Category extends Component {
 	
-	itemRefs = new Map();
+	deleteCategory(catId) {
+		Alert.alert('Confirm','Do you want to delete this category?',[
+			{ text: "YES", onPress: () => this.props.categoryAction.deleteCategory(catId)},
+			{ text: "NO", onPress: () => console.log("No Pressed") }
+		],{ cancelable: true});
+	}
 	
 	renderUnderlayLeft = ({ item, percentOpen }) => (
-			<TouchableOpacity onPressOut={() => this.props.categoryAction.deleteCategory(this.props.cat.catId)}>
+			<TouchableOpacity onPressOut={() => this.deleteCategory(this.props.cat.catId)}>
 				<View style={[styles.itemBg, {justifyContent: "flex-end"}]}>
 					<Icon name="delete"/>
 					<Text style={styles.title}></Text>
@@ -24,7 +29,7 @@ class Category extends Component {
 	);
 
 	renderUnderlayRight = ({ item, percentOpen, close }) => (
-			<TouchableOpacity onPressOut={() => console.log('edit category '+this.props.cat.catId)}>
+			<TouchableOpacity onPressOut={() => this.props.navigation.navigate('CategoryForm', {'type': 'EDIT', 'cat': this.props.cat})}>
 				<View style={[styles.itemBg, {justifyContent: "flex-start"}]}>
 					<Icon name="edit"/>
 					<Text style={styles.title}></Text>
@@ -43,22 +48,12 @@ class Category extends Component {
 	};
 	
 	render() {
+		let itemRef = null;
 		return (
 			<SwipeableItem
 				key={this.props.cat.catId}
 				item={this.props.cat, this.props.drag}
-				ref={ref => {
-				  if (ref && !this.itemRefs.get(this.props.cat.catId)) {
-					this.itemRefs.set(this.props.cat.catId, ref);
-				  }
-				}}
-				onChange={({ open }) => {
-				  if (open) {
-					[...this.itemRefs.entries()].forEach(([key, ref]) => {
-					  if (key !== this.props.cat.catId && ref) ref.close();
-					});
-				  }
-				}}
+				ref={ref => itemRef = ref}
 				overSwipe={50}
 				renderUnderlayLeft={this.renderUnderlayLeft}
 				snapPointsLeft={[50]}

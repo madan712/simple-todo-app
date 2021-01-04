@@ -17,6 +17,17 @@ export function insetCategory(catName, bgColor) {
 	};
 }
 
+export function updateCategory(catId, catName, bgColor) {	
+	return (dispatch) => {
+		db.transaction((tx) =>{
+			tx.executeSql('update category set name = ?, color = ? where id = ?;', [catName, bgColor, catId]);
+			},
+			(err) => console.log(err),
+			() => dispatch(loadTaskList()),
+		);
+	};
+}
+
 export function updateSequence(sequence) {
 	let query = 'update category set seq = case id';
 	for (let [catId, seq] of sequence) {
