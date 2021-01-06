@@ -2,7 +2,7 @@
   "expo": {
     "name": "simple todo app",
     "slug": "todo",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "A quick and simple todo list for maintaining important day to day activities",
     "orientation": "portrait",
     "githubUrl": "https://github.com/madan712/simple-todo-app",
