@@ -32,12 +32,19 @@ class TaskScreen extends Component {
 		this.props.taskAction.updateSequence(sequence);
 	}
 	
+	getCenterElement(text) {
+		return (
+			<Text style={{paddingTop: 20, color:'#fff', fontSize: 20,}}>{text}</Text>
+		);
+	}
+	
   render() {
     return (
 		<View style={styles.container}>
 			<Toolbar
+				style={{container:{height: 60}, rightElementContainer:{paddingTop: 20}, leftElementContainer:{paddingTop: 20}}}
 				leftElement='arrow-back' onLeftElementPress={() => this.props.navigation.goBack()}
-				centerElement={this.props.navigation.state.params.cat.catName}
+				centerElement={this.getCenterElement(this.props.navigation.state.params.cat.catName)}
 				rightElement={{ menu: {icon: "more-vert", labels: ['Delete all']} }}
 				onRightElementPress={(option) => { 
 					if(option.index === 0) {

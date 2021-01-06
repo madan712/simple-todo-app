@@ -44,15 +44,22 @@ class TaskForm extends React.Component {
 		}
 	}
 	
+	getCenterElement(text) {
+		return (
+			<Text style={{paddingTop: 20, color:'#fff', fontSize: 20,}}>{text}</Text>
+		);
+	}
+	
 	render() {
 		const header = this.isAdd ? 'Create new task' : 'Edit task';
 		
 		return (
 			<View style={styles.formContainer}>
 				<Toolbar
+					style={{container:{height: 60}, leftElementContainer:{paddingTop: 20}}}
 					leftElement='arrow-back'
 					onLeftElementPress={() => this.props.navigation.goBack()}
-					centerElement={header} />
+					centerElement={this.getCenterElement(header)} />
 				
 				<View style={styles.inputView}>
 					<Text style={{paddingBottom:10}}>Task name</Text>

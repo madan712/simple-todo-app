@@ -3,10 +3,10 @@
     "name": "simple todo app",
     "slug": "todo",
     "version": "1.0.0",
-	"description": "A quick and simple todo list for maintaining important day to day activities",
+    "description": "A quick and simple todo list for maintaining important day to day activities",
     "orientation": "portrait",
-	"githubUrl": "https://github.com/madan712/simple-todo-app",
-	"privacy": "public",
+    "githubUrl": "https://github.com/madan712/simple-todo-app",
+    "privacy": "public",
     "icon": "./assets/icon.png",
     "splash": {
       "image": "./assets/splash.png",
@@ -21,23 +21,23 @@
     ],
     "ios": {
       "supportsTablet": true,
-	  "bundleIdentifier": "com.javaxp.todo",
+      "bundleIdentifier": "com.javaxp.todo",
       "buildNumber": "1.0.0"
     },
     "android": {
-		"permissions": [
-					"CAMERA",
-					"RECORD_AUDIO",
-					"READ_PHONE_STATE",
-					"READ_CONTACTS"
-				],
+      "permissions": [
+        "CAMERA",
+        "RECORD_AUDIO",
+        "READ_PHONE_STATE",
+        "READ_CONTACTS"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-	  "package": "com.javaxp.todo",
-	  "versionCode": 1,
-	  "playStoreUrl": "https://play.google.com/store/apps/details?id=com.javaxp.todo",
+      "package": "com.javaxp.todo",
+      "versionCode": 1,
+      "playStoreUrl": "https://play.google.com/store/apps/details?id=com.javaxp.todo"
     },
     "web": {
       "favicon": "./assets/favicon.png"

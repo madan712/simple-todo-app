@@ -44,11 +44,18 @@ class CategoryScreen extends Component {
 		this.props.categoryAction.updateSequence(sequence);
 	}
 	
+	getCenterElement() {
+		return (
+			<Text style={{paddingTop: 20, color:'#fff', alignSelf: 'center', fontSize: 20,}}>TODO - Categories</Text>
+		);
+	}
+	
   render() {
     return (
 		<View style={styles.container}>
 			<Toolbar
-				centerElement='Todo - Category list'
+				style={{container:{height: 60}, rightElementContainer:{paddingTop: 20}}}
+				centerElement={this.getCenterElement()}
 				rightElement={{ menu: {icon: "more-vert", labels: ['Delete all']} }}
 				onRightElementPress={(option) => { 
 					if(option.index === 0) {
