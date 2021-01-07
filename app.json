@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "simple todo app",
-    "slug": "todo",
+    "slug": "simple-todo-app",
     "version": "1.0.1",
     "description": "A quick and simple todo list for maintaining important day to day activities",
     "orientation": "portrait",
