@@ -1,103 +1,154 @@
-import React, { Component } from 'react';
-import { Text, View, FlatList, TouchableOpacity, Alert } from 'react-native';
-import { ActionButton, Toolbar } from 'react-native-material-ui';
+import React from 'react'
+import { Alert, View } from 'react-native'
+import { ActivityIndicator, Appbar, Button, FAB, Modal, Text, TextInput } from 'react-native-paper'
+import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist'
 
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 
-import DraggableFlatList from 'react-native-draggable-flatlist';
+import _ from 'lodash'
 
-import _ from 'lodash';
+import Category from './category'
+import { ColorSelector } from './color-selector'
 
-import * as taskAction from '../../action/task-action';
-import * as categoryAction from '../../action/category-action';
+import * as taskAction from '../../action/task-action'
+import * as categoryAction from '../../action/category-action'
 
-import { styles } from '../../app-css';
+const CategoryScreen = props => {
 
-import Category from './category';
+	const [visible, setVisible] = React.useState(false)
 
-class CategoryScreen extends Component {
-	
-	componentDidMount() {
-		this.props.taskAction.loadTaskList();
+	const [inputValue, setInputValue] = React.useState('')
+
+	const [edit, setEdit] = React.useState(false)
+	const [editCatId, setEditCatId] = React.useState(0)
+
+	const colors = ['#808080', '#98AFC7', '#728FCE', '#00BFFF', '#8EEBEC', '#50C878', '#77DD77', '#E2F516', '#98FF98', '#D4A017', '#FF8040', '#E77471']
+	const defaultIndex = _.random(0, colors.length - 1)
+	const [color, setColor] = React.useState(colors[defaultIndex])
+
+	React.useEffect(() => {
+		console.log('Loading category')
+		props.taskAction.loadTaskListInitial()
+	}, [])
+
+	const itemRefs = React.useRef(new Map())
+
+	const addCategory = () => {
+		const category = inputValue.trim()
+		if (category) {
+			if (edit) {
+				console.log('Editing category ' + editCatId + ':' + category)
+				props.categoryAction.updateCategory(editCatId, category, color)
+				for (const [catId, ref] of itemRefs.current.entries()) {
+					if (ref) ref.close();
+				}
+			} else {
+				console.log('Saving new category ' + category)
+				props.categoryAction.insetCategory(category, color)
+			}
+		}
 	}
-	
-	getCategoriesFromTaskList() {
-		const categories = [];
-		_.forEach(_.groupBy( this.props.appReducer.taskList, 'catId' ), (catArray, catId) => {		
-			const cat = catArray[0];
-			cat['totalCount'] = _.filter(catArray, c => c.taskId).length;
-			cat['remainingCount'] = _.filter(catArray, c => c.isActive === 0).length;
-			categories.push(cat);
-		});
-		return _.orderBy(categories,'cSeq');
+
+	const editCategory = (cat) => {
+		console.log('Edit category ' + cat.catName)
+		setVisible(true)
+		setEdit(true)
+		setEditCatId(cat.catId)
+		setInputValue(cat.catName)
+		setColor(cat.color)
 	}
-	
-	updateSequence(categories) {
-		let sequence = new Map();
-		_.forEach(categories, (cat, index) => {	
-			sequence.set(cat['catId'], index + 1);
-		});
+
+	const getCategoriesFromTaskList = () => {
+		const categories = []
+		_.forEach(_.groupBy(props.appReducer.taskList, 'catId'), (catArray, catId) => {
+			const cat = catArray[0]
+			cat['totalCount'] = _.filter(catArray, c => c.taskId).length
+			cat['remainingCount'] = _.filter(catArray, c => c.isActive === 0).length
+			categories.push(cat)
+		})
+		return _.orderBy(categories, 'cSeq')
+	}
+
+	const updateSequence = (categories) => {
+		console.log('Updting category sequence')
+		let sequence = new Map()
+		_.forEach(categories, (cat, index) => {
+			sequence.set(cat['catId'], index + 1)
+		})
 		//Update cache to avoid lag
-		this.props.taskAction.updateTaskList(this.props.appReducer.taskList.map(t => ({ ...t, cSeq: sequence.get(t.catId)})));
+		props.taskAction.updateTaskList(props.appReducer.taskList.map(t => ({ ...t, cSeq: sequence.get(t.catId) })))
 		//Update DB
-		this.props.categoryAction.updateSequence(sequence);
+		props.categoryAction.updateSequence(sequence)
 	}
-	
-	getCenterElement() {
-		return (
-			<Text style={{paddingTop: 20, color:'#fff', alignSelf: 'center', fontSize: 20,}}>TODO - Categories</Text>
-		);
+
+	const deleteAll = () => {
+
+		Alert.alert('Confirm', 'Do you want to delete all categories?', [
+			{ text: "YES", onPress: () => props.categoryAction.deleteAllCategory() },
+			{ text: "NO", onPress: () => void 0 }
+		], { cancelable: true })
 	}
-	
-  render() {
-    return (
-		<View style={styles.container}>
-			<Toolbar
-				style={{container:{height: 60}, rightElementContainer:{paddingTop: 20}}}
-				centerElement={this.getCenterElement()}
-				rightElement={{ menu: {icon: "more-vert", labels: ['Delete all']} }}
-				onRightElementPress={(option) => { 
-					if(option.index === 0) {
-						if(this.getCategoriesFromTaskList().length === 0) {
-							Alert.alert('Error','No category found',[],{ cancelable: true});
-						} else {
-							Alert.alert('Confirm','Do you want to delete all category?',[
-								{ text: "YES", onPress: () => this.props.categoryAction.deleteAllCategory()},
-								{ text: "NO", onPress: () => () => void 0 }
-							],{ cancelable: true});
-						}
-					}
-				}}
+
+	return (
+
+		<View style={{ flex: 1, paddingBottom: 90 }}>
+			<Appbar.Header style={{ backgroundColor: '#3b5998' }}>
+				<Appbar.Content title="TODO" />
+				<Appbar.Action icon="delete" onPress={() => deleteAll()} />
+			</Appbar.Header>
+			{
+				props.appReducer.isLoaded ?
+					<DraggableFlatList
+						activationDistance={15}
+						data={getCategoriesFromTaskList()}
+						renderItem={({ item, index, drag, isActive }) => <ScaleDecorator><Category drag={drag} isActive={isActive} cat={item} itemRefs={itemRefs} editCategory={editCategory} /></ScaleDecorator>}
+						keyExtractor={item => item.catId.toString()}
+						onDragEnd={({ data }) => updateSequence(data)}
+						ListEmptyComponent={<Text style={{ flex: 1, alignSelf: 'center', justifyContent: 'center', marginTop: 50 }}>EMPTY</Text>}
+					/>
+					:
+					<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
+						<ActivityIndicator animating={true} color='#3b5998' />
+					</View>
+			}
+			<Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{ marginHorizontal: 10, backgroundColor: 'white', padding: 10, borderRadius: 5 }}>
+				<View style={{ flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
+					<TextInput
+						mode='outlined'
+						label='Category'
+						value={inputValue}
+						onChangeText={text => setInputValue(text)}
+						style={{ width: 200, height: 40 }}
+						autoFocus
+					/>
+					<Button mode="contained" onPress={() => { addCategory(), setInputValue(''), setVisible(false) }} style={{ marginTop: 5, height: 40, justifyContent: 'center', backgroundColor: '#3b5998' }}>{edit ? 'Edit' : 'Add'}</Button>
+				</View>
+				<ColorSelector colors={colors} setColor={setColor} color={color} />
+			</Modal>
+
+			<FAB
+				style={{ position: 'absolute', margin: 25, bottom: 0, alignSelf: 'center', backgroundColor: '#3b5998' }}
+				icon="plus"
+				onPress={() => { setVisible(true), setEdit(false) }}
 			/>
-			
-			<DraggableFlatList
-				activationDistance={15}
-				data={this.getCategoriesFromTaskList()}
-				renderItem={({ item, index, drag, isActive }) => <Category drag={drag} isActive={isActive} cat={item} navigation={this.props.navigation} />}
-				keyExtractor={item => item.catId.toString()}
-				onDragEnd={({ data }) => this.updateSequence(data)}
-				ListEmptyComponent={<Text style={styles.empty}>No category found</Text>}
-			/>
-			
-			<ActionButton onPress={() => this.props.navigation.navigate('CategoryForm', {'type': 'ADD'})}/>
+
 		</View>
-    );
-  }
+	)
 }
 
-function mapStateToProps( state ) {
-    return {
-        appReducer: state.appReducer
-    };
+
+const mapStateToProps = (state) => {
+	return {
+		appReducer: state.appReducer
+	};
 }
 
-function mapDispatchToProps( dispatch ) {
-    return {
-		taskAction: bindActionCreators( taskAction, dispatch ),
-		categoryAction: bindActionCreators( categoryAction, dispatch )
-    };
+const mapDispatchToProps = (dispatch) => {
+	return {
+		taskAction: bindActionCreators(taskAction, dispatch),
+		categoryAction: bindActionCreators(categoryAction, dispatch)
+	}
 }
 
-export default connect( mapStateToProps, mapDispatchToProps )( CategoryScreen );
-
+export default connect(mapStateToProps, mapDispatchToProps)(CategoryScreen)

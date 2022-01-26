@@ -1,27 +1,24 @@
-import { createAppContainer } from 'react-navigation';
-import { createStackNavigator } from 'react-navigation-stack';
+import 'react-native-gesture-handler'
+import React from 'react'
+import { NavigationContainer } from '@react-navigation/native'
+import { createStackNavigator } from '@react-navigation/stack'
 
-import TaskScreen from './component/task/task-screen';
-import TaskForm from './component/task/task-form';
-import CategoryScreen from './component/category/category-screen';
-import CategoryForm from './component/category/category-form'
+import TaskScreen from './component/task/task-screen'
+import CategoryScreen from './component/category/category-screen'
 
+const Stack = createStackNavigator()
 
-const MainNavigator = createStackNavigator(
-    {
-        TaskScreen: { screen: TaskScreen},
-		TaskForm: { screen: TaskForm },
-        CategoryScreen: { screen: CategoryScreen },
-		CategoryForm: { screen: CategoryForm }
-    },
-    {
-        initialRouteName: 'CategoryScreen',
-        headerMode: 'none',
-    },
-)
+function router() {
+	return (
+		<NavigationContainer>
+			<Stack.Navigator initialRouteName='Category' screenOptions={{ headerShown: false }}>
+				<Stack.Screen name='Category' component={CategoryScreen} />
+				<Stack.Screen name='Task' component={TaskScreen} />
+			</Stack.Navigator>
+		</NavigationContainer>
+	)
+}
 
-const router = createAppContainer(MainNavigator)
-
-export default router;
+export default router
 
 

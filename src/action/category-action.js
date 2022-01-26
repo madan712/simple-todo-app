@@ -2,7 +2,6 @@ import { openDatabase } from 'expo-sqlite';
 import _ from 'lodash';
 
 import { loadTaskList } from './task-action';
-import * as constant from '../constant/app-constant';
 
 const db = openDatabase('todo.db');
 

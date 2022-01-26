@@ -1,73 +1,85 @@
-import React, {Component} from 'react';
-import { Text, View, TouchableOpacity, Alert } from 'react-native';
-import { Icon } from 'react-native-material-ui';
+import React from 'react'
+import { Alert, Text, TouchableOpacity, View } from 'react-native'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import SwipeableItem from 'react-native-swipeable-item'
 
-import { styles } from '../../app-css';
-import SwipeableItem from 'react-native-swipeable-item';
+import Icon from 'react-native-vector-icons/FontAwesome5'
+import { useNavigation } from '@react-navigation/native'
 
-import * as categoryAction from '../../action/category-action';
+import * as categoryAction from '../../action/category-action'
 
-class Category extends Component {
-	
-	deleteCategory(catId) {
-		Alert.alert('Confirm','Do you want to delete this category?',[
-			{ text: "YES", onPress: () => this.props.categoryAction.deleteCategory(catId)},
-			{ text: "NO", onPress: () => () => void 0 }
-		],{ cancelable: true});
+const Category = props => {
+
+	const navigation = useNavigation()
+
+	const deleteCategory = () => {
+		if (props.cat.totalCount > 0) {
+			Alert.alert('Confirm', 'Do you want to delete this category?', [
+				{ text: "YES", onPress: () => props.categoryAction.deleteCategory(props.cat.catId) },
+				{ text: "NO", onPress: () => void 0 }
+			], { cancelable: true })
+		} else {
+			props.categoryAction.deleteCategory(props.cat.catId)
+		}
 	}
-	
-	renderUnderlayLeft = ({ item, percentOpen }) => (
-			<TouchableOpacity onPressOut={() => this.deleteCategory(this.props.cat.catId)}>
-				<View style={[styles.itemBg, {justifyContent: "flex-end"}]}>
-					<Icon name="delete"/>
-					<Text style={styles.title}></Text>
+
+	const renderUnderlayRight = () => {
+		return (
+			<TouchableOpacity onPressOut={() => props.editCategory(props.cat)}>
+				<View style={{ marginTop: 10, marginHorizontal: 10, height: 50, borderRadius: 5, flexDirection: 'row', backgroundColor: "#d3d3d3", justifyContent: "flex-start", alignItems: 'center' }}>
+					<Icon style={{ paddingLeft: 10 }} name="edit" size={30} color='#808080' />
 				</View>
 			</TouchableOpacity>
-	);
+		)
+	}
 
-	renderUnderlayRight = ({ item, percentOpen, close }) => (
-			<TouchableOpacity onPressOut={() => this.props.navigation.navigate('CategoryForm', {'type': 'EDIT', 'cat': this.props.cat})}>
-				<View style={[styles.itemBg, {justifyContent: "flex-start"}]}>
-					<Icon name="edit"/>
-					<Text style={styles.title}></Text>
+	const renderUnderlayLeft = () => {
+		return (
+			<TouchableOpacity onPressOut={() => deleteCategory()}>
+				<View style={{ marginTop: 10, marginHorizontal: 10, height: 50, borderRadius: 5, flexDirection: 'row', backgroundColor: "#d3d3d3", justifyContent: "flex-end", alignItems: 'center' }}>
+					<Icon style={{ paddingRight: 10 }} name="trash" size={30} color='#808080' />
 				</View>
 			</TouchableOpacity>
-	);
+		)
+	}
 
-	renderOverlay = ({ item, openLeft, openRight, openDirection, close }) => {
-		return (
-			<TouchableOpacity activeOpacity={1} onLongPress={this.props.drag} onPress={() => this.props.navigation.navigate('TaskScreen', { 'cat': this.props.cat })}>
-				<View style={[styles.item, {backgroundColor: this.props.cat.color, borderWidth: this.props.isActive ? 2 : 0,}]}>
-					<Text style={styles.title}>{this.props.cat.catName+" ("+this.props.cat.remainingCount+"/"+this.props.cat.totalCount+")"}</Text>
-			  </View>			
+	return (
+		<SwipeableItem
+			key={props.cat.catId}
+			item={props.cat}
+			ref={(ref) => {
+				if (ref && !props.itemRefs.current.get(props.cat.catId)) {
+					props.itemRefs.current.set(props.cat.catId, ref);
+				}
+			}}
+			overSwipe={50}
+			renderUnderlayLeft={renderUnderlayLeft}
+			snapPointsLeft={[50]}
+			renderUnderlayRight={renderUnderlayRight}
+			snapPointsRight={[50]}
+			onChange={({ open }) => {
+				if (open) {
+					for (const [catId, ref] of props.itemRefs.current.entries()) {
+						if (catId !== props.cat.catId && ref) ref.close();
+					}
+				}
+			}}
+		>
+			<TouchableOpacity activeOpacity={0.6} onLongPress={props.drag} onPress={() => navigation.navigate('Task', { 'cat': props.cat })}>
+				<View style={{ marginTop: 10, marginHorizontal: 10, height: 50, borderRadius: 5, backgroundColor: props.cat.color, justifyContent: 'center', borderWidth: 1, borderColor: props.isActive ? '#000' : '#808080' }}>
+					<Text style={{ paddingLeft: 10, fontSize: 20 }}>{props.cat.catName + " (" + props.cat.remainingCount + "/" + props.cat.totalCount + ")"}</Text>
+				</View>
 			</TouchableOpacity>
-		);
-	};
-	
-	render() {
-		return (
-			<SwipeableItem
-				key={this.props.cat.catId}
-				item={this.props.cat, this.props.drag}
-				ref={ref => void 0}
-				overSwipe={50}
-				renderUnderlayLeft={this.renderUnderlayLeft}
-				snapPointsLeft={[50]}
-				renderUnderlayRight={this.renderUnderlayRight}
-				snapPointsRight={[50]}
-				renderOverlay={this.renderOverlay}
-			/>
-		);
+		</SwipeableItem>
+	)
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		categoryAction: bindActionCreators(categoryAction, dispatch)
 	}
 }
 
-function mapDispatchToProps( dispatch ) {
-    return {
-		categoryAction: bindActionCreators( categoryAction, dispatch )
-    };
-}
-
-export default connect( null, mapDispatchToProps )( Category );
+export default connect(null, mapDispatchToProps)(Category);

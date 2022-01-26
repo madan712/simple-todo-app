@@ -14,3 +14,11 @@ web-build/
 # macOS
 .DS_Store
 build/
+/target/
+
+.project
+.classpath
+.settings
+.expo-shared
+*.lock
+yarn-error.log

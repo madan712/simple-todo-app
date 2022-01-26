@@ -1,91 +1,137 @@
-import React, { Component } from 'react';
-import { StyleSheet, Text, View, FlatList, Alert } from 'react-native';
-import { ActionButton, Toolbar } from 'react-native-material-ui';
+import React from 'react'
+import { Alert, View } from 'react-native'
+import { Appbar, Button, FAB, Modal, Text, TextInput } from 'react-native-paper'
+import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist'
 
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { useNavigation } from '@react-navigation/native'
 
-import _ from 'lodash';
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 
-import DraggableFlatList from 'react-native-draggable-flatlist';
+import _ from 'lodash'
 
-import * as taskAction from '../../action/task-action';
+import Task from './task'
 
-import { styles } from '../../app-css';
+import * as taskAction from '../../action/task-action'
 
-import Task from './task';
+const TaskScreen = props => {
 
-class TaskScreen extends Component {
-	
-	getTaskList() {
-		return _.orderBy(_.filter(this.props.appReducer.taskList, t => t.catId === this.props.navigation.state.params.cat.catId && t.taskId ), 'tSeq');
+	const cat = props.route.params.cat
+
+	const navigation = useNavigation()
+
+	const [visible, setVisible] = React.useState(false)
+
+	const [inputValue, setInputValue] = React.useState('')
+
+	const [edit, setEdit] = React.useState(false)
+	const [editTaskId, setEditTaskId] = React.useState(0)
+
+	const itemRefs = React.useRef(new Map())
+
+	const createTask = () => {
+		const task = inputValue.trim()
+		if (task) {
+			if (edit) {
+				console.log('Editing task ' + editTaskId + ':' + task)
+				props.taskAction.updateTask(editTaskId, task)
+				for (const [taskId, ref] of itemRefs.current.entries()) {
+					if (ref) ref.close();
+				}
+			} else {
+				console.log('Saving new task ' + task)
+				props.taskAction.insetTask(task, cat.catId)
+			}
+			navigation.navigate('Task', { 'cat': cat })
+		}
 	}
-	
-	updateSequence(taskList) {
-		let sequence = new Map();
-		_.forEach(taskList, (task, index) => {	
-			sequence.set(task['taskId'], index + 1);
+
+	const editTask = (task) => {
+		console.log('Edit task ' + task.taskName + ' in category ' + task.catName)
+		setVisible(true)
+		setEdit(true)
+		setInputValue(task.taskName)
+		setEditTaskId(task.taskId)
+	}
+
+	const updateSequence = (taskList) => {
+		console.log('Updting task sequence')
+		let sequence = new Map()
+		_.forEach(taskList, (task, index) => {
+			sequence.set(task['taskId'], index + 1)
 		});
 		//Update cache to avoid lag
-		this.props.taskAction.updateTaskList(this.props.appReducer.taskList.map(t => ({ ...t, tSeq: sequence.get(t.taskId)})));
+		props.taskAction.updateTaskList(props.appReducer.taskList.map(t => ({ ...t, tSeq: sequence.get(t.taskId) })))
 		//Update DB
-		this.props.taskAction.updateSequence(sequence);
+		props.taskAction.updateSequence(sequence)
 	}
-	
-	getCenterElement(text) {
-		return (
-			<Text style={{paddingTop: 20, color:'#fff', fontSize: 20,}}>{text}</Text>
-		);
+
+	const getTaskList = () => {
+		return _.orderBy(_.filter(props.appReducer.taskList, t => t.catId === cat.catId && t.taskId), 'tSeq')
 	}
-	
-  render() {
-    return (
-		<View style={styles.container}>
-			<Toolbar
-				style={{container:{height: 60}, rightElementContainer:{paddingTop: 20}, leftElementContainer:{paddingTop: 20}}}
-				leftElement='arrow-back' onLeftElementPress={() => this.props.navigation.goBack()}
-				centerElement={this.getCenterElement(this.props.navigation.state.params.cat.catName)}
-				rightElement={{ menu: {icon: "more-vert", labels: ['Delete all']} }}
-				onRightElementPress={(option) => { 
-					if(option.index === 0) {
-						if(this.getTaskList().length === 0) {
-							Alert.alert('Error','No task found',[],{ cancelable: true});
-						} else {
-							Alert.alert('Confirm','Do you want to delete all task?',[
-								{ text: "YES", onPress: () => this.props.taskAction.deleteAllTask(this.props.navigation.state.params.cat.catId)},
-								{ text: "NO", onPress: () => () => void 0 }
-							],{ cancelable: true});
-						}
-					}
-				}}
-			/>
-			
+
+	const deleteAll = () => {
+		if (getTaskList().length > 0) {
+			Alert.alert('Confirm', 'Do you want to delete all task?', [
+				{ text: "YES", onPress: () => props.taskAction.deleteAllTask(cat.catId) },
+				{ text: "NO", onPress: () => void 0 }
+			], { cancelable: true })
+		}
+	}
+
+	return (
+		<View style={{ flex: 1, paddingBottom: 90 }}>
+			<Appbar.Header style={{ backgroundColor: '#3b5998' }}>
+				<Appbar.BackAction onPress={() => navigation.goBack()} />
+				<Appbar.Content title={props.route.params.cat.catName} />
+				<Appbar.Action icon="delete" onPress={() => deleteAll()} />
+			</Appbar.Header>
+
 			<DraggableFlatList
 				activationDistance={15}
-				data={this.getTaskList()}
-				renderItem={({ item, index, drag, isActive }) => <Task drag={drag} isActive={isActive} task={item} toggleActive={this.props.taskAction.toggleActive} navigation={this.props.navigation} cat={this.props.navigation.state.params.cat} />}
+				data={getTaskList()}
+				renderItem={({ item, index, drag, isActive }) => <ScaleDecorator><Task drag={drag} isActive={isActive} task={item} itemRefs={itemRefs} editTask={editTask} /></ScaleDecorator>}
 				keyExtractor={item => item.taskId.toString()}
-				onDragEnd={({ data }) => this.updateSequence(data)}
-				ListEmptyComponent={<Text style={styles.empty}>No task found</Text>}
+				onDragEnd={({ data }) => updateSequence(data)}
+				ListEmptyComponent={<Text style={{ flex: 1, alignSelf: 'center', justifyContent: 'center', marginTop: 50 }}>EMPTY</Text>}
 			/>
-			
-			<ActionButton onPress={ () => this.props.navigation.navigate('TaskForm', {'type': 'ADD', 'cat': this.props.navigation.state.params.cat }) }/>
+
+			<Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{ marginHorizontal: 10, backgroundColor: 'white', padding: 10, borderRadius: 5 }}>
+				<View style={{ flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
+					<TextInput
+						mode='outlined'
+						label='Task'
+						value={inputValue}
+						onChangeText={text => setInputValue(text)}
+						style={{ width: 200, height: 40 }}
+						autoFocus
+					/>
+
+					<Button mode="contained" onPress={() => { createTask(), setInputValue(''), setVisible(false) }} style={{ marginTop: 5, height: 40, justifyContent: 'center', backgroundColor: '#3b5998' }}>{edit ? 'Edit' : 'Add'}</Button>
+				</View>
+			</Modal>
+
+			<FAB
+				style={{ position: 'absolute', margin: 25, bottom: 0, alignSelf: 'center', backgroundColor: '#3b5998' }}
+				icon="plus"
+				onPress={() => { setVisible(true), setEdit(false) }}
+			/>
 		</View>
-    );
-  }
+	)
 }
 
-function mapStateToProps( state ) {
-    return {
-        appReducer: state.appReducer
-    };
+
+const mapStateToProps = (state) => {
+	return {
+		appReducer: state.appReducer
+	};
 }
 
-function mapDispatchToProps( dispatch ) {
-    return {
-		taskAction: bindActionCreators( taskAction, dispatch )
-    };
+const mapDispatchToProps = (dispatch) => {
+	return {
+		taskAction: bindActionCreators(taskAction, dispatch)
+	}
 }
 
-export default connect( mapStateToProps, mapDispatchToProps )( TaskScreen );
+export default connect(mapStateToProps, mapDispatchToProps)(TaskScreen)
 

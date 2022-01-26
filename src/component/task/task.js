@@ -1,99 +1,86 @@
-import React, {Component} from 'react';
-import { Text, View, TouchableOpacity, Switch, Alert } from 'react-native';
-import { Icon } from 'react-native-material-ui';
+import React from 'react'
+import { Text, TouchableOpacity, View } from 'react-native'
+import { Switch } from 'react-native-paper'
+import { bindActionCreators } from 'redux'
+import { connect } from 'react-redux'
 
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import SwipeableItem from 'react-native-swipeable-item'
 
-import SwipeableItem from 'react-native-swipeable-item';
+import Icon from 'react-native-vector-icons/FontAwesome5'
 
-import * as taskAction from '../../action/task-action';
+import * as taskAction from '../../action/task-action'
 
-import { styles } from '../../app-css';
-	
-class Task extends Component {
-	
-	constructor(props) {
-		super(props);
-		this.toggleActive = this.toggleActive.bind(this);
+const Task = props => {
+
+	const renderUnderlayRight = () => {
+		return (
+			<TouchableOpacity onPressOut={() => props.editTask(props.task)}>
+				<View style={{ marginTop: 10, marginHorizontal: 10, height: 50, borderRadius: 5, flexDirection: 'row', backgroundColor: "#d3d3d3", justifyContent: "flex-start", alignItems: 'center' }}>
+					<Icon style={{ paddingLeft: 10 }} name="edit" size={30} color='#808080' />
+				</View>
+			</TouchableOpacity>
+		)
 	}
 
-	toggleActive() {
+	const renderUnderlayLeft = () => {
+		return (
+			<TouchableOpacity onPressOut={() => props.taskAction.deleteTask(props.task.taskId)}>
+				<View style={{ marginTop: 10, marginHorizontal: 10, height: 50, borderRadius: 5, flexDirection: 'row', backgroundColor: "#d3d3d3", justifyContent: "flex-end", alignItems: 'center' }}>
+					<Icon style={{ paddingRight: 10 }} name="trash" size={30} color='#808080' />
+				</View>
+			</TouchableOpacity>
+		)
+	}
+
+	const toggleActive = () => {
 		//Update cache to avoid lag
-		this.props.taskAction.updateTaskList(this.props.appReducer.taskList.map(t => (t.taskId === this.props.task.taskId ? {...t, isActive: t.isActive === 1 ? 0 : 1} : t)));
+		props.taskAction.updateTaskList(props.appReducer.taskList.map(t => (t.taskId === props.task.taskId ? { ...t, isActive: t.isActive === 1 ? 0 : 1 } : t)))
 		//Update DB
-		this.props.toggleActive(this.props.task.taskId)
+		props.taskAction.toggleActive(props.task.taskId)
 	}
-	
-	deleteTask(taskId) {
-		Alert.alert('Confirm','Do you want to delete this task?',[
-			{ text: "YES", onPress: () => this.props.taskAction.deleteTask(taskId)},
-			{ text: "NO", onPress: () => () => void 0 }
-		],{ cancelable: true});
-	}
-	
-	renderUnderlayLeft = ({ item, percentOpen }) => (
-			<TouchableOpacity onPressOut={() => this.deleteTask(this.props.task.taskId)}>
-				<View style={[styles.itemBg, {justifyContent: "flex-end"}]}>
-					<Icon name="delete"/>
-					<Text style={styles.title}></Text>
-				</View>
-			</TouchableOpacity>
-	);
 
-	renderUnderlayRight = ({ item, percentOpen, close }) => (
-			<TouchableOpacity onPressOut={() => this.props.navigation.navigate('TaskForm', {'type': 'EDIT', 'task': this.props.task, 'cat': this.props.cat })}>
-				<View style={[styles.itemBg, {justifyContent: "flex-start"}]}>
-					<Icon name="edit"/>
-					<Text style={styles.title}></Text>
+	return (
+		<SwipeableItem
+			key={props.task.taskId}
+			item={props.task}
+			ref={(ref) => {
+				if (ref && !props.itemRefs.current.get(props.task.taskId)) {
+					props.itemRefs.current.set(props.task.taskId, ref);
+				}
+			}}
+			overSwipe={50}
+			renderUnderlayLeft={renderUnderlayLeft}
+			snapPointsLeft={[50]}
+			renderUnderlayRight={renderUnderlayRight}
+			snapPointsRight={[50]}
+			onChange={({ open }) => {
+				if (open) {
+					for (const [taskId, ref] of props.itemRefs.current.entries()) {
+						if (taskId !== props.task.taskId && ref) ref.close();
+					}
+				}
+			}}
+		>
+			<TouchableOpacity activeOpacity={0.6} onLongPress={props.drag}>
+				<View style={{ marginTop: 10, marginHorizontal: 10, height: 50, borderRadius: 5, backgroundColor: props.task.color, flexDirection: 'row', justifyContent: 'space-between', borderWidth: 1, borderColor: props.isActive ? '#000' : '#808080' }}>
+					<Text style={{ fontSize: 20, paddingLeft: 10, alignSelf: 'center', textDecorationLine: props.task.isActive === 1 ? 'none' : 'line-through' }}>{props.task.taskName}</Text>
+					<Switch value={props.task.isActive === 1} onValueChange={toggleActive} />
 				</View>
 			</TouchableOpacity>
-	);
+		</SwipeableItem>
+	)
+}
 
-	renderOverlay = ({ item, openLeft, openRight, openDirection, close }) => {
-		return (
-			<TouchableOpacity activeOpacity={1} onLongPress={this.props.drag}>
-				<View style={[styles.item, {backgroundColor: this.props.task.color, borderWidth: this.props.isActive ? 2 : 0,}]} >
-				<Text style={[styles.title, {textDecorationLine: this.props.task.isActive === 1 ? 'none' : 'line-through'}]}>{this.props.task.taskName}</Text>
-				<Switch
-					trackColor={{ false: "#767577", true: "#81b0ff" }}
-					thumbColor={this.props.task.isActive === 1 ? "#f5dd4b" : "#f4f3f4"}
-					ios_backgroundColor="#3e3e3e"
-					onValueChange={this.toggleActive}
-					value={this.props.task.isActive === 1}
-				/>
-				</View>
-			</TouchableOpacity>
-		);
+const mapStateToProps = (state) => {
+	return {
+		appReducer: state.appReducer
 	};
-	
-	render() {
-		return (
-			<SwipeableItem
-				key={this.props.task.taskId}
-				item={this.props.task, this.props.drag}
-				ref={ref => void 0}
-				overSwipe={50}
-				renderUnderlayLeft={this.renderUnderlayLeft}
-				snapPointsLeft={[50]}
-				renderUnderlayRight={this.renderUnderlayRight}
-				snapPointsRight={[50]}
-				renderOverlay={this.renderOverlay}
-			/>
-		);
+}
+
+const mapDispatchToProps = (dispatch) => {
+	return {
+		taskAction: bindActionCreators(taskAction, dispatch)
 	}
 }
 
-function mapStateToProps( state ) {
-    return {
-        appReducer: state.appReducer
-    };
-}
-
-function mapDispatchToProps( dispatch ) {
-    return {
-		taskAction: bindActionCreators( taskAction, dispatch )
-    };
-}
-
-export default connect( mapStateToProps, mapDispatchToProps )( Task );
+export default connect(mapStateToProps, mapDispatchToProps)(Task)

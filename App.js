@@ -1,24 +1,24 @@
-import React, { Component } from 'react';
-import { Provider } from 'react-redux';
+import * as React from 'react'
 
-import appStore from './src/app-store';
-import Router from './src/router';
+import { Provider as PaperProvider } from 'react-native-paper'
+import { Provider as StoreProvider } from 'react-redux'
 
-import { initApp } from './src/db';
+import { initApp } from './src/db'
+import appStore from './src/app-store'
+import Router from './src/router'
 
-class App extends Component {
-	
-	componentDidMount() {
-		initApp(() => void 0);
-	}
-        
-	render() {		
-		return ( 
-			<Provider store={appStore}>
+export default function App() {
+
+	React.useEffect(() => {
+		console.log('Creating DB')
+		initApp(() => void 0)
+	}, [])
+
+	return (
+		<StoreProvider store={appStore}>
+			<PaperProvider>
 				<Router />
-			</Provider>
-		);
-	}
+			</PaperProvider>
+		</StoreProvider>
+	)
 }
-
-export default App;
