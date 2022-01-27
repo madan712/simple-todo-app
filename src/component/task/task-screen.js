@@ -35,13 +35,13 @@ const TaskScreen = props => {
 		const task = inputValue.trim()
 		if (task) {
 			if (edit) {
-				console.log('Editing task ' + editTaskId + ':' + task)
+				//console.log('Editing task ' + editTaskId + ':' + task)
 				props.taskAction.updateTask(editTaskId, task)
 				for (const [taskId, ref] of itemRefs.current.entries()) {
 					if (ref) ref.close();
 				}
 			} else {
-				console.log('Saving new task ' + task)
+				//console.log('Saving new task ' + task)
 				props.taskAction.insetTask(task, cat.catId)
 			}
 			navigation.navigate('Task', { 'cat': cat })
@@ -49,7 +49,7 @@ const TaskScreen = props => {
 	}
 
 	const editTask = (task) => {
-		console.log('Edit task ' + task.taskName + ' in category ' + task.catName)
+		//console.log('Edit task ' + task.taskName + ' in category ' + task.catName)
 		setVisible(true)
 		setEdit(true)
 		setInputValue(task.taskName)
@@ -57,7 +57,7 @@ const TaskScreen = props => {
 	}
 
 	const updateSequence = (taskList) => {
-		console.log('Updting task sequence')
+		//console.log('Updting task sequence')
 		let sequence = new Map()
 		_.forEach(taskList, (task, index) => {
 			sequence.set(task['taskId'], index + 1)

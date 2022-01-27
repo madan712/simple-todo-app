@@ -25,12 +25,12 @@ const CategoryScreen = props => {
 	const [edit, setEdit] = React.useState(false)
 	const [editCatId, setEditCatId] = React.useState(0)
 
-	const colors = ['#F79F81', '#F5D0A9', '#FACC2E', '#F3F781', '#D0F5A9', '#A9F5A9', '#A9F5D0', '#A9D0F5', '#F5A9F2', '#CECEF6', '#CEF6F5', '#BDBDBD']
+	const colors = ['#F6CECE', '#F5D0A9', '#F5ECCE', '#F5F6CE', '#D0F5A9', '#A9F5A9', '#A9F5D0', '#A9D0F5', '#F6CEF5', '#CECEF6', '#CEF6F5', '#BDBDBD']
 	const defaultIndex = _.random(0, colors.length - 1)
 	const [color, setColor] = React.useState(colors[defaultIndex])
 
 	React.useEffect(() => {
-		console.log('Loading category')
+		//console.log('Loading category')
 		props.taskAction.loadTaskListInitial()
 	}, [])
 
@@ -40,20 +40,20 @@ const CategoryScreen = props => {
 		const category = inputValue.trim()
 		if (category) {
 			if (edit) {
-				console.log('Editing category ' + editCatId + ':' + category)
+				//console.log('Editing category ' + editCatId + ':' + category)
 				props.categoryAction.updateCategory(editCatId, category, color)
 				for (const [catId, ref] of itemRefs.current.entries()) {
 					if (ref) ref.close();
 				}
 			} else {
-				console.log('Saving new category ' + category)
+				//console.log('Saving new category ' + category)
 				props.categoryAction.insetCategory(category, color)
 			}
 		}
 	}
 
 	const editCategory = (cat) => {
-		console.log('Edit category ' + cat.catName)
+		//console.log('Edit category ' + cat.catName)
 		setVisible(true)
 		setEdit(true)
 		setEditCatId(cat.catId)
@@ -73,7 +73,7 @@ const CategoryScreen = props => {
 	}
 
 	const updateSequence = (categories) => {
-		console.log('Updting category sequence')
+		//console.log('Updting category sequence')
 		let sequence = new Map()
 		_.forEach(categories, (cat, index) => {
 			sequence.set(cat['catId'], index + 1)
