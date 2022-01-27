@@ -14,6 +14,8 @@ import Task from './task'
 
 import * as taskAction from '../../action/task-action'
 
+import { useKeyboard } from '../../util/use-keyboard'
+
 const TaskScreen = props => {
 
 	const cat = props.route.params.cat
@@ -115,6 +117,7 @@ const TaskScreen = props => {
 				style={{ position: 'absolute', margin: 25, bottom: 0, alignSelf: 'center', backgroundColor: '#3b5998' }}
 				icon="plus"
 				onPress={() => { setVisible(true), setEdit(false) }}
+				visible={!useKeyboard()}
 			/>
 		</View>
 	)

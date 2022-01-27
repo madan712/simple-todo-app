@@ -14,6 +14,8 @@ import { ColorSelector } from './color-selector'
 import * as taskAction from '../../action/task-action'
 import * as categoryAction from '../../action/category-action'
 
+import { useKeyboard } from '../../util/use-keyboard'
+
 const CategoryScreen = props => {
 
 	const [visible, setVisible] = React.useState(false)
@@ -23,7 +25,7 @@ const CategoryScreen = props => {
 	const [edit, setEdit] = React.useState(false)
 	const [editCatId, setEditCatId] = React.useState(0)
 
-	const colors = ['#808080', '#98AFC7', '#728FCE', '#00BFFF', '#8EEBEC', '#50C878', '#77DD77', '#E2F516', '#98FF98', '#D4A017', '#FF8040', '#E77471']
+	const colors = ['#F79F81', '#F5D0A9', '#FACC2E', '#F3F781', '#D0F5A9', '#A9F5A9', '#A9F5D0', '#A9D0F5', '#F5A9F2', '#CECEF6', '#CEF6F5', '#BDBDBD']
 	const defaultIndex = _.random(0, colors.length - 1)
 	const [color, setColor] = React.useState(colors[defaultIndex])
 
@@ -131,6 +133,7 @@ const CategoryScreen = props => {
 				style={{ position: 'absolute', margin: 25, bottom: 0, alignSelf: 'center', backgroundColor: '#3b5998' }}
 				icon="plus"
 				onPress={() => { setVisible(true), setEdit(false) }}
+				visible={!useKeyboard()}
 			/>
 
 		</View>
