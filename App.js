@@ -10,7 +10,7 @@ import Router from './src/router'
 export default function App() {
 
 	React.useEffect(() => {
-		console.log('Creating DB')
+		//console.log('Creating DB')
 		initApp(() => void 0)
 	}, [])
 

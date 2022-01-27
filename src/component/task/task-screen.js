@@ -1,5 +1,5 @@
 import React from 'react'
-import { Alert, View } from 'react-native'
+import { Alert, StatusBar, View } from 'react-native'
 import { Appbar, Button, FAB, Modal, Text, TextInput } from 'react-native-paper'
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist'
 
@@ -83,7 +83,10 @@ const TaskScreen = props => {
 
 	return (
 		<View style={{ flex: 1, paddingBottom: 90 }}>
-			<Appbar.Header style={{ backgroundColor: '#3b5998' }}>
+
+			<StatusBar backgroundColor='#3b5998' />
+
+			<Appbar.Header statusBarHeight={0} style={{ backgroundColor: '#3b5998' }}>
 				<Appbar.BackAction onPress={() => navigation.goBack()} />
 				<Appbar.Content title={props.route.params.cat.catName} />
 				<Appbar.Action icon="delete" onPress={() => deleteAll()} />
