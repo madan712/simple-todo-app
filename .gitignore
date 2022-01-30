@@ -22,3 +22,5 @@ build/
 .expo-shared
 *.lock
 yarn-error.log
+
+eas.json

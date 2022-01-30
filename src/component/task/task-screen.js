@@ -2,18 +2,14 @@ import React from 'react'
 import { Alert, StatusBar, View } from 'react-native'
 import { Appbar, Button, FAB, Modal, Text, TextInput } from 'react-native-paper'
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist'
-
 import { useNavigation } from '@react-navigation/native'
-
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-
 import _ from 'lodash'
 
 import Task from './task'
-
 import * as taskAction from '../../action/task-action'
-
+import { styles } from '../../app-css'
 import { useKeyboard } from '../../util/use-keyboard'
 
 const TaskScreen = props => {
@@ -75,21 +71,21 @@ const TaskScreen = props => {
 	const deleteAll = () => {
 		if (getTaskList().length > 0) {
 			Alert.alert('Confirm', 'Do you want to delete all task?', [
-				{ text: "YES", onPress: () => props.taskAction.deleteAllTask(cat.catId) },
-				{ text: "NO", onPress: () => void 0 }
+				{ text: 'YES', onPress: () => props.taskAction.deleteAllTask(cat.catId) },
+				{ text: 'NO', onPress: () => void 0 }
 			], { cancelable: true })
 		}
 	}
 
 	return (
-		<View style={{ flex: 1, paddingBottom: 90 }}>
+		<View style={styles.container}>
 
-			<StatusBar backgroundColor='#3b5998' />
+			<StatusBar backgroundColor={styles.const['backgroundColor']} />
 
-			<Appbar.Header statusBarHeight={0} style={{ backgroundColor: '#3b5998' }}>
+			<Appbar.Header statusBarHeight={0} style={styles.appbar}>
 				<Appbar.BackAction onPress={() => navigation.goBack()} />
 				<Appbar.Content title={props.route.params.cat.catName} />
-				<Appbar.Action icon="delete" onPress={() => deleteAll()} />
+				<Appbar.Action icon='delete' onPress={() => deleteAll()} />
 			</Appbar.Header>
 
 			<DraggableFlatList
@@ -98,27 +94,27 @@ const TaskScreen = props => {
 				renderItem={({ item, index, drag, isActive }) => <ScaleDecorator><Task drag={drag} isActive={isActive} task={item} itemRefs={itemRefs} editTask={editTask} /></ScaleDecorator>}
 				keyExtractor={item => item.taskId.toString()}
 				onDragEnd={({ data }) => updateSequence(data)}
-				ListEmptyComponent={<Text style={{ flex: 1, alignSelf: 'center', justifyContent: 'center', marginTop: 50 }}>EMPTY</Text>}
+				ListEmptyComponent={<Text style={[styles.center, styles.emptytext]}>EMPTY</Text>}
 			/>
 
-			<Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{ marginHorizontal: 10, backgroundColor: 'white', padding: 10, borderRadius: 5 }}>
-				<View style={{ flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
+			<Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={styles.modal}>
+				<View style={styles.inputpannel}>
 					<TextInput
 						mode='outlined'
 						label='Task'
 						value={inputValue}
 						onChangeText={text => setInputValue(text)}
-						style={{ width: 200, height: 40 }}
+						style={styles.textbox}
 						autoFocus
 					/>
 
-					<Button mode="contained" onPress={() => { createTask(), setInputValue(''), setVisible(false) }} style={{ marginTop: 5, height: 40, justifyContent: 'center', backgroundColor: '#3b5998' }}>{edit ? 'Edit' : 'Add'}</Button>
+					<Button mode='contained' onPress={() => { createTask(), setInputValue(''), setVisible(false) }} style={styles.button}>{edit ? 'Edit' : 'Add'}</Button>
 				</View>
 			</Modal>
 
 			<FAB
-				style={{ position: 'absolute', margin: 25, bottom: 0, alignSelf: 'center', backgroundColor: '#3b5998' }}
-				icon="plus"
+				style={styles.fab}
+				icon='plus'
 				onPress={() => { setVisible(true), setEdit(false) }}
 				visible={!useKeyboard()}
 			/>

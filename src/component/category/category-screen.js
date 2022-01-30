@@ -2,18 +2,15 @@ import React from 'react'
 import { Alert, StatusBar, View } from 'react-native'
 import { ActivityIndicator, Appbar, Button, FAB, Modal, Text, TextInput } from 'react-native-paper'
 import DraggableFlatList, { ScaleDecorator } from 'react-native-draggable-flatlist'
-
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-
 import _ from 'lodash'
 
 import Category from './category'
 import { ColorSelector } from './color-selector'
-
 import * as taskAction from '../../action/task-action'
 import * as categoryAction from '../../action/category-action'
-
+import { styles } from '../../app-css'
 import { useKeyboard } from '../../util/use-keyboard'
 
 const CategoryScreen = props => {
@@ -25,7 +22,7 @@ const CategoryScreen = props => {
 	const [edit, setEdit] = React.useState(false)
 	const [editCatId, setEditCatId] = React.useState(0)
 
-	const colors = ['#F6CECE', '#F5D0A9', '#F5ECCE', '#F5F6CE', '#D0F5A9', '#A9F5A9', '#A9F5D0', '#A9D0F5', '#F6CEF5', '#CECEF6', '#CEF6F5', '#BDBDBD']
+	const colors = ['#F6CECE', '#F5D0A9', '#F5ECCE', '#D4E6F1', '#D0F5A9', '#A9F5A9', '#A9F5D0', '#A9D0F5', '#F6CEF5', '#CECEF6', '#CEF6F5', '#BDBDBD']
 	const defaultIndex = _.random(0, colors.length - 1)
 	const [color, setColor] = React.useState(colors[defaultIndex])
 
@@ -87,20 +84,20 @@ const CategoryScreen = props => {
 	const deleteAll = () => {
 
 		Alert.alert('Confirm', 'Do you want to delete all categories?', [
-			{ text: "YES", onPress: () => props.categoryAction.deleteAllCategory() },
-			{ text: "NO", onPress: () => void 0 }
+			{ text: 'YES', onPress: () => props.categoryAction.deleteAllCategory() },
+			{ text: 'NO', onPress: () => void 0 }
 		], { cancelable: true })
 	}
 
 	return (
 
-		<View style={{ flex: 1, paddingBottom: 90 }}>
+		<View style={styles.container}>
 
-			<StatusBar backgroundColor='#3b5998' />
+			<StatusBar backgroundColor={styles.const['backgroundColor']} />
 
-			<Appbar.Header statusBarHeight={0} style={{ backgroundColor: '#3b5998', bottom: 0 }}>
-				<Appbar.Content title="TODO" />
-				<Appbar.Action icon="delete" onPress={() => deleteAll()} />
+			<Appbar.Header statusBarHeight={0} style={styles.appbar}>
+				<Appbar.Content title='TODO' />
+				<Appbar.Action icon='delete' onPress={() => deleteAll()} />
 			</Appbar.Header>
 			{
 				props.appReducer.isLoaded ?
@@ -110,31 +107,31 @@ const CategoryScreen = props => {
 						renderItem={({ item, index, drag, isActive }) => <ScaleDecorator><Category drag={drag} isActive={isActive} cat={item} itemRefs={itemRefs} editCategory={editCategory} /></ScaleDecorator>}
 						keyExtractor={item => item.catId.toString()}
 						onDragEnd={({ data }) => updateSequence(data)}
-						ListEmptyComponent={<Text style={{ flex: 1, alignSelf: 'center', justifyContent: 'center', marginTop: 50 }}>EMPTY</Text>}
+						ListEmptyComponent={<Text style={[styles.center, styles.emptytext]}>EMPTY</Text>}
 					/>
 					:
-					<View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-						<ActivityIndicator animating={true} color='#3b5998' />
+					<View style={styles.center}>
+						<ActivityIndicator animating={true} color={styles.const['backgroundColor']} />
 					</View>
 			}
-			<Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={{ marginHorizontal: 10, backgroundColor: 'white', padding: 10, borderRadius: 5 }}>
-				<View style={{ flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center' }}>
+			<Modal visible={visible} onDismiss={() => setVisible(false)} contentContainerStyle={styles.modal}>
+				<View style={styles.inputpannel}>
 					<TextInput
 						mode='outlined'
 						label='Category'
 						value={inputValue}
 						onChangeText={text => setInputValue(text)}
-						style={{ width: 200, height: 40 }}
+						style={styles.textbox}
 						autoFocus
 					/>
-					<Button mode="contained" onPress={() => { addCategory(), setInputValue(''), setVisible(false) }} style={{ marginTop: 5, height: 40, justifyContent: 'center', backgroundColor: '#3b5998' }}>{edit ? 'Edit' : 'Add'}</Button>
+					<Button mode='contained' onPress={() => { addCategory(), setInputValue(''), setVisible(false) }} style={styles.button}>{edit ? 'Edit' : 'Add'}</Button>
 				</View>
 				<ColorSelector colors={colors} setColor={setColor} color={color} />
 			</Modal>
 
 			<FAB
-				style={{ position: 'absolute', margin: 25, bottom: 0, alignSelf: 'center', backgroundColor: '#3b5998' }}
-				icon="plus"
+				style={styles.fab}
+				icon='plus'
 				onPress={() => { setVisible(true), setEdit(false) }}
 				visible={!useKeyboard()}
 			/>
