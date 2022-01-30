@@ -2,13 +2,12 @@ import React from 'react'
 import { Alert, Text, TouchableOpacity, View } from 'react-native'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-
 import SwipeableItem from 'react-native-swipeable-item'
 
 import Icon from 'react-native-vector-icons/FontAwesome5'
 import { useNavigation } from '@react-navigation/native'
-
 import * as categoryAction from '../../action/category-action'
+import { styles } from '../../app-css'
 
 const Category = props => {
 
@@ -17,8 +16,8 @@ const Category = props => {
 	const deleteCategory = () => {
 		if (props.cat.totalCount > 0) {
 			Alert.alert('Confirm', 'Do you want to delete this category?', [
-				{ text: "YES", onPress: () => props.categoryAction.deleteCategory(props.cat.catId) },
-				{ text: "NO", onPress: () => void 0 }
+				{ text: 'YES', onPress: () => props.categoryAction.deleteCategory(props.cat.catId) },
+				{ text: 'NO', onPress: () => void 0 }
 			], { cancelable: true })
 		} else {
 			props.categoryAction.deleteCategory(props.cat.catId)
@@ -28,8 +27,8 @@ const Category = props => {
 	const renderUnderlayRight = () => {
 		return (
 			<TouchableOpacity onPressOut={() => props.editCategory(props.cat)}>
-				<View style={{ marginTop: 10, marginHorizontal: 10, height: 50, borderRadius: 5, flexDirection: 'row', backgroundColor: "#d3d3d3", justifyContent: "flex-start", alignItems: 'center' }}>
-					<Icon style={{ paddingLeft: 10 }} name="edit" size={30} color='#808080' />
+				<View style={styles.underlayright}>
+					<Icon style={styles.paddingleft10} name='edit' size={30} color='#808080' />
 				</View>
 			</TouchableOpacity>
 		)
@@ -38,8 +37,8 @@ const Category = props => {
 	const renderUnderlayLeft = () => {
 		return (
 			<TouchableOpacity onPressOut={() => deleteCategory()}>
-				<View style={{ marginTop: 10, marginHorizontal: 10, height: 50, borderRadius: 5, flexDirection: 'row', backgroundColor: "#d3d3d3", justifyContent: "flex-end", alignItems: 'center' }}>
-					<Icon style={{ paddingRight: 10 }} name="trash" size={30} color='#808080' />
+				<View style={styles.underlayleft}>
+					<Icon style={styles.paddingright10} name='trash' size={30} color='#808080' />
 				</View>
 			</TouchableOpacity>
 		)
@@ -68,8 +67,8 @@ const Category = props => {
 			}}
 		>
 			<TouchableOpacity activeOpacity={0.6} onLongPress={props.drag} onPress={() => navigation.navigate('Task', { 'cat': props.cat })}>
-				<View style={{ marginTop: 10, marginHorizontal: 10, height: 50, borderRadius: 5, backgroundColor: props.cat.color, justifyContent: 'center', borderWidth: 1, borderColor: props.isActive ? '#000' : '#808080' }}>
-					<Text style={{ paddingLeft: 10, fontSize: 20 }}>{props.cat.catName + " (" + props.cat.remainingCount + "/" + props.cat.totalCount + ")"}</Text>
+				<View style={[styles.list, (props.isActive ? { borderColor: '#000' } : { borderColor: '#808080' }), { backgroundColor: props.cat.color, justifyContent: 'center' }]}>
+					<Text style={styles.catfont}>{props.cat.catName + ' (' + props.cat.remainingCount + '/' + props.cat.totalCount + ')'}</Text>
 				</View>
 			</TouchableOpacity>
 		</SwipeableItem>

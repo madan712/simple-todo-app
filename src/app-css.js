@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
 	container: {
 		flex: 1, paddingBottom: 60
 	},
-	appbar:{
+	appbar: {
 		backgroundColor: '#3b5998', bottom: 0
 	},
 	emptytext: {
@@ -31,9 +31,25 @@ export const styles = StyleSheet.create({
 	fab: {
 		position: 'absolute', margin: 10, bottom: 0, alignSelf: 'center', backgroundColor: '#3b5998'
 	},
-	underlay: {
-		marginTop: 10, marginHorizontal: 10, height: 50, borderRadius: 5, flexDirection: 'row', backgroundColor: "#d3d3d3", alignItems: 'center'
+	underlayright: {
+		marginTop: 10, marginHorizontal: 10, height: 50, borderRadius: 5, flexDirection: 'row', backgroundColor: '#d3d3d3', alignItems: 'center', justifyContent: 'flex-start'
+	},
+	underlayleft: {
+		marginTop: 10, marginHorizontal: 10, height: 50, borderRadius: 5, flexDirection: 'row', backgroundColor: '#d3d3d3', alignItems: 'center', justifyContent: 'flex-end'
+	},
+	paddingleft10: {
+		paddingLeft: 10
+	},
+	paddingright10: {
+		paddingRight: 10
+	},
+	catfont: {
+		paddingLeft: 10, fontSize: 20
+	},
+	taskfont: {
+		paddingLeft: 10, fontSize: 20, alignSelf: 'center'
+	},
+	list: {
+		marginTop: 10, marginHorizontal: 10, height: 50, borderRadius: 5, borderWidth: 1
 	}
-	
-	
 });

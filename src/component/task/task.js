@@ -3,20 +3,19 @@ import { Text, TouchableOpacity, View } from 'react-native'
 import { Switch } from 'react-native-paper'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
-
 import SwipeableItem from 'react-native-swipeable-item'
-
 import Icon from 'react-native-vector-icons/FontAwesome5'
 
 import * as taskAction from '../../action/task-action'
+import { styles } from '../../app-css'
 
 const Task = props => {
 
 	const renderUnderlayRight = () => {
 		return (
 			<TouchableOpacity onPressOut={() => props.editTask(props.task)}>
-				<View style={{ marginTop: 10, marginHorizontal: 10, height: 50, borderRadius: 5, flexDirection: 'row', backgroundColor: "#d3d3d3", justifyContent: "flex-start", alignItems: 'center' }}>
-					<Icon style={{ paddingLeft: 10 }} name="edit" size={30} color='#808080' />
+				<View style={styles.underlayright}>
+					<Icon style={styles.paddingleft10} name='edit' size={30} color='#808080' />
 				</View>
 			</TouchableOpacity>
 		)
@@ -25,8 +24,8 @@ const Task = props => {
 	const renderUnderlayLeft = () => {
 		return (
 			<TouchableOpacity onPressOut={() => props.taskAction.deleteTask(props.task.taskId)}>
-				<View style={{ marginTop: 10, marginHorizontal: 10, height: 50, borderRadius: 5, flexDirection: 'row', backgroundColor: "#d3d3d3", justifyContent: "flex-end", alignItems: 'center' }}>
-					<Icon style={{ paddingRight: 10 }} name="trash" size={30} color='#808080' />
+				<View style={styles.underlayleft}>
+					<Icon style={styles.paddingright10} name='trash' size={30} color='#808080' />
 				</View>
 			</TouchableOpacity>
 		)
@@ -62,8 +61,8 @@ const Task = props => {
 			}}
 		>
 			<TouchableOpacity activeOpacity={0.6} onLongPress={props.drag}>
-				<View style={{ marginTop: 10, marginHorizontal: 10, height: 50, borderRadius: 5, backgroundColor: props.task.color, flexDirection: 'row', justifyContent: 'space-between', borderWidth: 1, borderColor: props.isActive ? '#000' : '#808080' }}>
-					<Text style={{ fontSize: 20, paddingLeft: 10, alignSelf: 'center', textDecorationLine: props.task.isActive === 1 ? 'none' : 'line-through' }}>{props.task.taskName}</Text>
+				<View style={[styles.list, (props.isActive ? { 'borderColor': '#000' } : { 'borderColor': '#808080' }), { backgroundColor: props.task.color, justifyContent: 'space-between', flexDirection: 'row' }]}>
+					<Text style={[styles.taskfont, (props.task.isActive === 1 ? { 'textDecorationLine': 'none' } : { 'textDecorationLine': 'line-through' })]}>{props.task.taskName}</Text>
 					<Switch value={props.task.isActive === 1} onValueChange={toggleActive} />
 				</View>
 			</TouchableOpacity>
